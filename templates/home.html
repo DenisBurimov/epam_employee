@@ -9,12 +9,12 @@
     <h1>Home Page Testing</h1>
 <!--    {{ users }}-->
     {% for project in projects %}
-        {% set time_difference = project.project_started.date() - project.project_deadline.date() %}
-        <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started.date() }}, {{ project.project_deadline.date() }}, {{ time_difference }}</p>
+        {% set time_difference = project.project_started - project.project_deadline %}
+        <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started }}, {{ project.project_deadline }}, {{ time_difference.days }}</p>
     {% endfor %}
     <br>
     {% for task in tasks %}
-        <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started.date() }}, {{ task.task_deadline.date() }}</p>
+        <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started }}, {{ task.task_deadline }}</p>
     {% endfor %}
     <br>
     {% for user in users %}
