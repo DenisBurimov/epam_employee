@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Home Page
+{% endblock title %}
+
+
+{% block content %}
+    <form action="{{ url_for('register') }}" method="post">
+        <input type="text" name="username" placeholder="User Name">
+        <input type="text" name="email" placeholder="Email">
+        <input type="text" name="role" placeholder="Role">
+        <input type="text" name="password1" placeholder="Password">
+        <input type="text" name="password1" placeholder="Confirm password">
+        <input type="submit" value="Register">
+    </form>
+{% endblock content %}

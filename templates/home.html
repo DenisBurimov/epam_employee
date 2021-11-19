@@ -1,14 +1,23 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home Page</title>
-</head>
-<body>
-    <h1>Home Page Testing</h1>
-</body>
-</html>
+{% extends 'base.html' %}
 
+{% block title %}
+    Home Page
+{% endblock title %}
+
+
+{% block content %}
+    <h1>Home Page Testing</h1>
+<!--    {{ users }}-->
+    {% for project in projects %}
+        {% set time_difference = project.project_started.date() - project.project_deadline.date() %}
+        <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started.date() }}, {{ project.project_deadline.date() }}, {{ time_difference }}</p>
+    {% endfor %}
+    <br>
+    {% for task in tasks %}
+        <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started.date() }}, {{ task.task_deadline.date() }}</p>
+    {% endfor %}
+    <br>
+    {% for user in users %}
+        <p>{{ user.username }}, {{ user.email }}, {{ user.role }}</p>
+    {% endfor %}
+{% endblock content %}
