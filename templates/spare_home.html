@@ -7,11 +7,6 @@
 
 {% block content %}
     <h1>Home Page Testing</h1>
-<!--    {{ projects }}-->
-<!--    <br>-->
-<!--    {{ tasks }}-->
-<!--    <br>-->
-<!--    {{ users }}-->
     {% for project in projects %}
         {% set time_difference = project.project_started - project.project_deadline %}
         <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started }}, {{ project.project_deadline }}, {{ time_difference.days }}</p>

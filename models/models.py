@@ -41,8 +41,8 @@ class User(db.Model):
     role = db.Column(db.String(length=30))
     salary = db.Column(db.Integer(), nullable=False, default=500)
     bonus = db.Column(db.Integer(), nullable=False, default=0)
-    task_name = db.Column(db.Integer(), db.ForeignKey('task.task_name'))
-    project_name = db.Column(db.Integer(), db.ForeignKey('project.project_name'))
+    task_name = db.Column(db.String(length=30), db.ForeignKey('task.task_name'))
+    project_name = db.Column(db.String(length=30), db.ForeignKey('project.project_name'))
 
     def __repr__(self):
         return f"Username: {self.username}, role: {self.role}"
