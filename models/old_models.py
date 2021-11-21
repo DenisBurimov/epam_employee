@@ -2,9 +2,10 @@ from service import db
 
 
 class Project(db.Model):
-    project_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     project_name = db.Column(db.String(length=30), nullable=False, unique=True)
-    fulfilment = db.Column(db.Integer(), default=0)
+    fulfilment = db.Column(db.Integer())
     project_started = db.Column(db.Date, nullable=False)
     project_deadline = db.Column(db.Date, nullable=False)
     currently_paid = db.Column(db.Integer(), nullable=False, default=0)
@@ -16,10 +17,11 @@ class Project(db.Model):
 
 
 class Task(db.Model):
-    task_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    project_name = db.Column(db.String(length=30))
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    project_name = db.Column(db.String(length=30), db.ForeignKey('project.project_name'))
     task_name = db.Column(db.String(length=30), nullable=False, unique=True)
-    task_fulfilment = db.Column(db.Integer(), default=0)
+    task_fulfilment = db.Column(db.Integer())
     task_started = db.Column(db.Date, nullable=False)
     task_deadline = db.Column(db.Date, nullable=False)
     currently_paid = db.Column(db.Integer(), nullable=False, default=0)
@@ -31,15 +33,16 @@ class Task(db.Model):
 
 
 class User(db.Model):
-    user_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     username = db.Column(db.String(length=30), nullable=False, unique=True)
     email = db.Column(db.String(length=50), nullable=False, unique=True)
     hashed_password = db.Column(db.String(length=60), nullable=False)
-    role = db.Column(db.String(length=30), default="Developer")
+    role = db.Column(db.String(length=30))
     salary = db.Column(db.Integer(), nullable=False, default=500)
     bonus = db.Column(db.Integer(), nullable=False, default=0)
-    task_name = db.Column(db.String(length=30))
-    project_name = db.Column(db.String(length=30))
+    task_name = db.Column(db.String(length=30), db.ForeignKey('task.task_name'))
+    project_name = db.Column(db.String(length=30), db.ForeignKey('project.project_name'))
 
     def __repr__(self):
         return f"Username: {self.username}, role: {self.role}"

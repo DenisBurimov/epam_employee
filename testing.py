@@ -1,6 +1,5 @@
-import datetime
+from random import randint
 
-deadline = datetime.date(2021, 12, 31)
-today = datetime.date.today()
+numbers = [randint(1, 11) for x in range(3)]
 
-print(deadline, today, (deadline - today).days)
+print(numbers)
