@@ -1,5 +1,9 @@
-from random import randint
+class Task:
+    a = "A"
+    b = "B"
 
-numbers = [randint(1, 11) for x in range(3)]
+item = Task()
 
-print(numbers)
+item.c = "C"
+
+print(item)

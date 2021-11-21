@@ -22,9 +22,10 @@ class Task(db.Model):
     task_fulfilment = db.Column(db.Integer(), default=0)
     task_started = db.Column(db.Date, nullable=False)
     task_deadline = db.Column(db.Date, nullable=False)
-    currently_paid = db.Column(db.Integer(), nullable=False, default=0)
-    predicted_task_salary = db.Column(db.Integer(), nullable=False, default=0)
-    expected_task_salary = db.Column(db.Integer(), nullable=False, default=0)
+    # Add difference between today and deadline
+    currently_paid = db.Column(db.Integer(), nullable=False, default=0) # Is timedifference * salaries sum
+    predicted_task_salary = db.Column(db.Integer(), nullable=False, default=0) # Just put manually
+    expected_task_salary = db.Column(db.Integer(), nullable=False, default=0) # Calculated as sum of salaries of those who is on this task pruducted with timedifference
 
     def __repr__(self):
         return f"Project: {self.project_name}, task: {self.task_name}, accomplished: {self.task_fulfilment}, deadline: {self.task_deadline}"
