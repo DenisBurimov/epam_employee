@@ -11,16 +11,57 @@ def home():
     users = User.query.all()
     return render_template('home.html', projects=projects, tasks=tasks, users=users)
 
+@app.route("/projects")
+def projects():
+    # Only project names, fulfilment, dates, backlog, finances
+    projects_info = []
+    for project_query in Project.query.all():
+        delta = project_query.project_deadline - date.today()
+        project_query.timedifference = delta.days
+
+        project_query.users = User.query.filter_by(project_name=project_query.project_name)
+        project_query.salary_plus_bonuses = 0
+        for each_user in project_query.users:
+            project_query.salary_plus_bonuses += each_user.salary + each_user.bonus
+
+        # Now we make a total paid at the moment
+        project_query.time_since_started = (date.today() - project_query.project_started).days
+        project_query.currently_paid = project_query.time_since_started * project_query.salary_plus_bonuses // 30
+
+        # Expected total payments, when the project will be done
+        project_query.yet_to_pay = project_query.timedifference * project_query.salary_plus_bonuses //30
+        project_query.expected_total_payments = project_query.yet_to_pay + project_query.currently_paid
+
+        projects_info.append(project_query)
+
+    return render_template('projects.html', projects=projects_info)
 
 @app.route("/tasks")
 def tasks():
-    objects = []
+    tasks_to_pass = []
     for tasks_query in Task.query.all():
         delta = tasks_query.task_deadline - date.today()
         tasks_query.timedifference = delta.days
-        objects.append(tasks_query)
+        tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
+        tasks_to_pass.append(tasks_query)
 
-    return render_template('tasks.html', passed_value=objects)
+    # Users have to be requested filtered by task name
+    # We pass list of users
+    # We parse users salary
+
+    # Curently paid field:
+    # if task_started: (time since the task was started) * sum of salaries of users on this task
+    # else: 0
+    # Predicted salary is suppose to be inputed by PM or project administrator
+    # Expected salary:
+    # if time difference is positive then (timedifference between today and the deadline) * sum of salaries of users on this task
+    # if time difference is negative then currently_paid * 1.5
+
+    # currently_paid and expected_project_salary are supposed to be pushed to db
+    # This allows us to request these values in project page
+    # when we execute the same calculations of time and salaries for project
+
+    return render_template('tasks.html', tasks=tasks_to_pass)
 
 
 @app.route("/register", methods=['GET', 'POST'])

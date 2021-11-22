@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Current projects
+{% endblock title %}
+
+
+{% block content %}
+    <h1>Projects</h1>
+    <br>
+    {% for project in projects %}
+        {{ project.project_name }}
+        {{ project.fulfilment }}%
+        {{ project.project_deadline }}
+        {{ project.salary_plus_bonuses }}
+        {{ project.time_since_started }}
+        {{ project.timedifference }}
+        {{ project.currently_paid }}
+        {{ project.expected_total_payments }}
+
+            {% for current_user in project.users %}
+                {{ current_user.username }}
+                {{ current_user.role }}
+            {% endfor %}
+        <br>
+        <br>
+    {% endfor %}
+    <br>
+{% endblock content %}

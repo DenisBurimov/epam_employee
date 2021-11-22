@@ -1,19 +1,31 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Home Page
+    Tasks of the project
 {% endblock title %}
 
 
 {% block content %}
     <h1>Tasks</h1>
-<!--    {{ passed_value }}-->
     <br>
-    {% for item in passed_value %}
-        {{ item.task_name }}
-        {{ item.task_deadline }}
-        {{ item.timedifference }}
+    {% for task in tasks %}
+        {{ task.project_name }}
+        {{ task.task_name }}
+        {{ task.task_fulfilment }}%
+        {{ task.task_deadline }}
+        {{ task.timedifference }}
+
+            {% for current_user in task.users %}
+                {{ current_user.username }}
+                {{ current_user.role }}
+            {% endfor %}
+        <br>
         <br>
     {% endfor %}
     <br>
+    {% for each_user in users %}
+        {{ each_user.username }}
+        {{ each_user.email }}
+        <br>
+    {% endfor %}
 {% endblock content %}
