@@ -5,14 +5,37 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <title>{% block title %} {% endblock title %}</title>
 </head>
 <body>
-    <h3>The template header of the page</h3>
-    <a href="{{ url_for('home') }}">Home</a>
-    <a href="{{ url_for('projects') }}">Projects</a>
-    <a href="{{ url_for('tasks') }}">Tasks</a>
-    <a href="{{ url_for('register') }}">Register</a>
+    <div class="blueline">
+        <div class="denysburimov">Denys Burimov EPAM employee project</div>
+    </div>
+
+    <nav>
+        <div class="topmenu wrapper">
+            <div class="left_menu">
+                <img src="{{ url_for('static', filename='pictures/EPAM_logo.png') }}" alt="EPAM_logo" class="logo">
+            </div>
+            <div class="right_menu">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('projects') }}">Projects</a>
+                <a href="{{ url_for('tasks') }}">Tasks</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="title_screen">
+        <div class="wrapper">
+            pass
+        </div>
+    </section>
+
+
+
+
     <br>
         {% block content %}
 

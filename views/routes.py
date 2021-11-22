@@ -36,6 +36,29 @@ def projects():
 
     return render_template('projects.html', projects=projects_info)
 
+
+@app.route("/projects/<int:project_id>")
+def project_details(project_id):
+    project = Project.query.get(project_id)
+    delta = project.project_deadline - date.today()
+    project.timedifference = delta.days
+
+    project.users = User.query.filter_by(project_name=project.project_name)
+    project.salary_plus_bonuses = 0
+    for each_user in project.users:
+        project.salary_plus_bonuses += each_user.salary + each_user.bonus
+
+    # Now we make a total paid at the moment
+    project.time_since_started = (date.today() - project.project_started).days
+    project.currently_paid = project.time_since_started * project.salary_plus_bonuses // 30
+
+    # Expected total payments, when the project will be done
+    project.yet_to_pay = project.timedifference * project.salary_plus_bonuses // 30
+    project.expected_total_payments = project.yet_to_pay + project.currently_paid
+
+    return render_template('project_details.html', project=project)
+
+
 @app.route("/tasks")
 def tasks():
     tasks_to_pass = []
@@ -44,22 +67,6 @@ def tasks():
         tasks_query.timedifference = delta.days
         tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
         tasks_to_pass.append(tasks_query)
-
-    # Users have to be requested filtered by task name
-    # We pass list of users
-    # We parse users salary
-
-    # Curently paid field:
-    # if task_started: (time since the task was started) * sum of salaries of users on this task
-    # else: 0
-    # Predicted salary is suppose to be inputed by PM or project administrator
-    # Expected salary:
-    # if time difference is positive then (timedifference between today and the deadline) * sum of salaries of users on this task
-    # if time difference is negative then currently_paid * 1.5
-
-    # currently_paid and expected_project_salary are supposed to be pushed to db
-    # This allows us to request these values in project page
-    # when we execute the same calculations of time and salaries for project
 
     return render_template('tasks.html', tasks=tasks_to_pass)
 
