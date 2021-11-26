@@ -1,7 +1,8 @@
 from service import app, db
-from flask import render_template, redirect, url_for,request
+from flask import render_template, redirect, url_for,request, flash
 from models.models import Project, Task, User
 from datetime import date
+from service.forms import RegistrationForm, LoginForm
 
 @app.route("/")
 @app.route("/home")
@@ -80,13 +81,19 @@ def tasks():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password1']
-        new_user = User(username=username, email=email, hashed_password=password)
-        db.session.add(new_user)
-        db.session.commit()
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
+    return render_template('register.html', title='Register', form=form)
 
-    return render_template('register.html')
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == 'mail1@company.com' and form.password.data == '123456':
+            flash('You have been logged in!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+    return render_template('login.html', title='Login', form=form)

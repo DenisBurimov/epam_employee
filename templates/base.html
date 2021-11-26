@@ -22,14 +22,21 @@
                 <a href="{{ url_for('home') }}">Description</a>
                 <a href="{{ url_for('projects') }}">Projects</a>
                 <a href="{{ url_for('tasks') }}">Tasks</a>
-                <a href="#">Login</a>
+                <a href="{{ url_for('login') }}">Login</a>
                 <a href="{{ url_for('register') }}">Register</a>
             </div>
         </div>
     </nav>
-
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         {% block content %}
-
         {% endblock content %}
 
     <footer>

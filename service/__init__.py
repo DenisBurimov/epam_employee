@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
+app.config['SECRET_KEY'] = 'bcdae24d30fd163c00cdd40bb6d9ef22'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../sql/company.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:0034@localhost/mcompany'
 
