@@ -56,7 +56,14 @@ def project_details(project_id):
     project.yet_to_pay = project.timedifference * project.salary_plus_bonuses // 30
     project.expected_total_payments = project.yet_to_pay + project.currently_paid
 
-    return render_template('project_details.html', project=project)
+    tasks = []
+    for tasks_query in Task.query.filter_by(project_name=project.project_name):
+        delta = tasks_query.task_deadline - date.today()
+        tasks_query.timedifference = delta.days
+        tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
+        tasks.append(tasks_query)
+
+    return render_template('project_details.html', project=project, tasks=tasks)
 
 
 @app.route("/tasks")

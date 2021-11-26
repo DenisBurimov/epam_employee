@@ -6,16 +6,45 @@
 
 
 {% block content %}
-    <h1>Home Page Testing</h1>
-    {% for project in projects %}
-        <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started }}, {{ project.project_deadline }}</p>
-    {% endfor %}
-    <br>
-    {% for task in tasks %}
-        <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started }}, {{ task.task_deadline }}</p>
-    {% endfor %}
-    <br>
-    {% for user in users %}
-        <p>{{ user.username }}, {{ user.email }}, {{ user.role }}</p>
-    {% endfor %}
+    <section class="title_screen">
+        <div class="title_outer wrapper">
+            <div class="project_documentation">
+                <p>Project</p>
+                <p>documentation</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="white_panel">
+        <div class="wrapper">
+            {% for project in projects %}
+                <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started }}, {{ project.project_deadline }}</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="grey_panel">
+        <div class="wrapper">
+            <div class="description_header">
+                <h3>Some description</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum harum id ipsam magni molestiae molestias sunt! Animi corporis est exercitationem fuga, labore nemo obcaecati officia quae quasi qui repellat suscipit?</p>
+            </div>
+
+            <div class="white_text">
+                {% for task in tasks %}
+                    <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started }}, {{ task.task_deadline }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="white_panel">
+        <div class="wrapper">
+            {% for user in users %}
+                <p>{{ user.username }}, {{ user.email }}, {{ user.role }}</p>
+            {% endfor %}
+        </div>
+    </section>
+
+
 {% endblock content %}

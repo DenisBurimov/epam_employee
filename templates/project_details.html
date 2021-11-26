@@ -6,18 +6,67 @@
 
 
 {% block content %}
-    <h1>{{ project.project_name }}</h1>
-    {{ project.fulfilment }}%
-    {{ project.project_deadline }}
-    {{ project.salary_plus_bonuses }}
-    {{ project.time_since_started }}
-    {{ project.timedifference }}
-    {{ project.currently_paid }}
-    {{ project.expected_total_payments }}
+    <section class="white_panel ">
+        <div class="wrapper">
+            <div class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></div>
+            <div class="project_details">
+                <div class="th"><p>Done</p></div>
+                <div class="th"><p>Deadline</p></div>
+                <div class="th th_horizontal"><p>Salary plus</p><p>bonuses</p></div>
+                <div class="th th_horizontal"><p>Days since</p><p>started</p></div>
+                <div class="th th_horizontal"><p>Days to</p><p>deadline</p></div>
+                <div class="th th_horizontal"><p>Currently</p><p>paid</p></div>
+                <div class="th th_horizontal"><p>Expected</p><p>total</p></div>
+                <div class="th"><p>Team</p></div>
+                <div class="bright">{{ project.fulfilment }}%</div>
+                <div class="dim">{{ project.project_deadline }}</div>
+                <div class="bright">{{ project.salary_plus_bonuses }}</div>
+                <div class="dim">{{ project.time_since_started }}</div>
+                <div class="bright">{{ project.timedifference }}</div>
+                <div class="dim">{{ project.currently_paid }}</div>
+                <div class="bright">{{ project.expected_total_payments }}</div>
 
-    {% for current_user in project.users %}
-        {{ current_user.username }}
-        {{ current_user.role }}
-    {% endfor %}
-    <br>
+                <div class="dim">
+                    {% for current_user in project.users %}
+                        <p>{{ current_user.username }} - {{ current_user.role }}</p>
+                    {% endfor %}
+                </div>
+                <br>
+            </div>
+        </div>
+    </section>
+
+    <section class="white_panel">
+        <div class="wrapper">
+            <div class="headings"><span>&#60</span> {{ project.project_name }} - Tasks <span>&#62</span></div>
+            <div class="tasks">
+                <div class="th"><p>Project</p></div>
+                <div class="th"><p>Task</p></div>
+                <div class="th"><p>Done</p></div>
+                <div class="th"><p>Deadline</p></div>
+                <div class="th th_horizontal"><p>Days to</p><p>deadline</p></div>
+                <div class="th"><p>Team</p></div>
+                <div class="th"><p>Email</p></div>
+                {% for task in tasks %}
+                    <div class="bright">{{ task.project_name }}</div>
+                    <div class="dim">{{ task.task_name }}</div>
+                    <div class="bright">{{ task.task_fulfilment }}%</div>
+                    <div class="dim">{{ task.task_deadline }}</div>
+                    <div class="bright">{{ task.timedifference }}</div>
+                    <div class="dim">
+                        {% for current_user in task.users %}
+                            <p>{{ current_user.username }} - {{ current_user.role }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="bright">
+                        {% for current_user in task.users %}
+                            <p>{{current_user.email}}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+
 {% endblock content %}
