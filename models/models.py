@@ -1,4 +1,11 @@
-from service import db
+from service import db, login_manager
+from flask_login import UserMixin
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.filter_by(user_id=user_id).first()
+    return user
 
 
 class Project(db.Model):
@@ -30,7 +37,7 @@ class Task(db.Model):
         return f"Project: {self.project_name}, task: {self.task_name}, accomplished: {self.task_fulfilment}, deadline: {self.task_deadline}"
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     user_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     username = db.Column(db.String(length=30), nullable=False, unique=True)
     email = db.Column(db.String(length=50), nullable=False, unique=True)
@@ -40,6 +47,9 @@ class User(db.Model):
     bonus = db.Column(db.Integer(), nullable=False, default=0)
     task_name = db.Column(db.String(length=30))
     project_name = db.Column(db.String(length=30))
+
+    def get_id(self):
+        return (self.user_id)
 
     def __repr__(self):
         return f"Username: {self.username}, role: {self.role}"

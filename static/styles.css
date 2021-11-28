@@ -179,12 +179,19 @@
     grid-row-gap: 2px;
 }
 
-.register {
+.register, .login {
     min-height: 600px;
     background: url('pictures/office_04.jpg');
     background-size: cover;
     background-position: 35% 65%;
 }
+
+.register_form, .login_form {
+    margin: 0 20%;
+    width: 60%;
+}
+
+.register_form fieldset, .login_form fieldset {border: none;}
 
 .footer_white {
     margin-bottom: 50px;
