@@ -24,6 +24,7 @@
                     {% if current_user.role == 'admin' %}
                         <a href="{{ url_for('projects') }}">Projects</a>
                         <a href="{{ url_for('tasks') }}">Tasks</a>
+                        <a href="{{ url_for('users') }}">Users</a>
                     {% elif (current_user.role == 'PO' or current_user.role == 'PM') %}
                         <a href="{{ url_for('projects') }}">Projects</a>
                     {% else %}

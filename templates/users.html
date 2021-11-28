@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Users
+{% endblock title %}
+
+
+{% block content %}
+    <section class="white_panel">
+        <div class="wrapper">
+            <div class="headings"><span>&#60</span> Users <span>&#62</span></div>
+            <div class="users_table">
+                <div class="th"><p>Username</p></div>
+                <div class="th"><p>Email</p></div>
+                <div class="th"><p>Role</p></div>
+                <div class="th"><p>Salary</p></div>
+                <div class="th"><p>Bonus</p></div>
+                <div class="th"><p>Task Name</p></div>
+                <div class="th"><p>Project Name</p></div>
+                {% for user in users %}
+                    <div class="bright">{{ user.username }}</div>
+                    <div class="dim">{{ user.email }}</div>
+                    <div class="bright">{{ user.role }}</div>
+                    <div class="dim">{{ user.salary }}</div>
+                    <div class="bright">{{ user.bonus }}</div>
+                    <div class="dim">{{ user.task_name }}</div>
+                    <div class="bright">{{ user.project_name }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock content %}

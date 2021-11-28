@@ -183,6 +183,13 @@
     grid-row-gap: 2px;
 }
 
+.users_table {
+    display: grid;
+    grid-template-columns: 15% 25% 10% 10% 10% 15% 15%;
+    grid-column-gap: 2px;
+    grid-row-gap: 2px;
+}
+
 .register, .login {
     min-height: 600px;
     background: url('pictures/office_04.jpg');

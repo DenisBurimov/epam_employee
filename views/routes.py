@@ -72,16 +72,25 @@ def project_details(project_id):
 
 @app.route("/tasks")
 def tasks():
+    if current_user.project_name:
+        tasks_selected = Task.query.filter_by(project_name=current_user.project_name)
+    else:
+        tasks_selected = Task.query.all()
     tasks_to_pass = []
-    for tasks_query in Task.query.filter_by(project_name=current_user.project_name):
+    for tasks_query in tasks_selected:
         delta = tasks_query.task_deadline - date.today()
         tasks_query.timedifference = delta.days
         tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
         tasks_to_pass.append(tasks_query)
 
-
-
     return render_template('tasks.html', tasks=tasks_to_pass, c_user=current_user)
+
+@app.route("/users")
+def users():
+    if current_user.role == "admin" or current_user.role == "PO":
+        users = User.query.all()
+
+    return render_template('users.html', users=users)
 
 
 @app.route("/register", methods=['GET', 'POST'])

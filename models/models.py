@@ -14,9 +14,6 @@ class Project(db.Model):
     fulfilment = db.Column(db.Integer(), default=0)
     project_started = db.Column(db.Date, nullable=False)
     project_deadline = db.Column(db.Date, nullable=False)
-    currently_paid = db.Column(db.Integer(), nullable=False, default=0)
-    predicted_project_salary = db.Column(db.Integer(), nullable=False, default=0)
-    expected_project_salary = db.Column(db.Integer(), nullable=False, default=0)
 
     def __repr__(self):
         return f"Project: {self.project_name}, accomplished: {self.fulfilment}, deadline: {self.project_deadline}"
@@ -29,9 +26,6 @@ class Task(db.Model):
     task_fulfilment = db.Column(db.Integer(), default=0)
     task_started = db.Column(db.Date, nullable=False)
     task_deadline = db.Column(db.Date, nullable=False)
-    currently_paid = db.Column(db.Integer(), nullable=False, default=0)
-    predicted_task_salary = db.Column(db.Integer(), nullable=False, default=0)
-    expected_task_salary = db.Column(db.Integer(), nullable=False, default=0)
 
     def __repr__(self):
         return f"Project: {self.project_name}, task: {self.task_name}, accomplished: {self.task_fulfilment}, deadline: {self.task_deadline}"
@@ -45,8 +39,8 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(length=30), default="Developer")
     salary = db.Column(db.Integer(), nullable=False, default=500)
     bonus = db.Column(db.Integer(), nullable=False, default=0)
-    task_name = db.Column(db.String(length=30))
-    project_name = db.Column(db.String(length=30))
+    task_name = db.Column(db.String(length=30), default="Training")
+    project_name = db.Column(db.String(length=30), default="Bench")
 
     def get_id(self):
         return (self.user_id)

@@ -8,7 +8,7 @@
 {% block content %}
     <section class="white_panel">
         <div class="wrapper">
-            <div class="headings"><span>&#60</span>*Project Name - Tasks <span>&#62</span></div>
+            <div class="headings"><span>&#60</span>{{ current_user.project_name }} - Tasks <span>&#62</span></div>
             <div class="tasks">
                 <div class="th"><p>Project</p></div>
                 <div class="th"><p>Task</p></div>
@@ -24,18 +24,17 @@
                     <div class="dim">{{ task.task_deadline }}</div>
                     <div class="bright">{{ task.timedifference }}</div>
                     <div class="dim">
-                        {% for current_user in task.users %}
-                            <p>{{ current_user.username }} - {{ current_user.role }}</p>
+                        {% for each_user in task.users %}
+                            <p>{{ each_user.username }} - {{ each_user.role }}</p>
                         {% endfor %}
                     </div>
                     <div class="bright">
-                        {% for current_user in task.users %}
-                            <p>{{current_user.email}}</p>
+                        {% for each_user in task.users %}
+                            <p>{{each_user.email}}</p>
                         {% endfor %}
                     </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="headings">{{c_user}}, project: {{ c_user.project_name }}, tasks: {{ c_user.task_name }}</div>
     </section>
 {% endblock content %}
