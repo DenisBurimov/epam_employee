@@ -73,7 +73,7 @@ def project_details(project_id):
 @app.route("/tasks")
 def tasks():
     tasks_to_pass = []
-    for tasks_query in Task.query.all():
+    for tasks_query in Task.query.filter_by(project_name=current_user.project_name):
         delta = tasks_query.task_deadline - date.today()
         tasks_query.timedifference = delta.days
         tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)

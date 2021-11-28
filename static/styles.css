@@ -31,15 +31,19 @@
 }
 
 .right_menu {
-    width: 500px;
+    /*width: 500px;*/
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
 
 }
 
 .right_menu a {
+    margin-left: 45px;
     text-decoration: none;
 }
+
+.right_menu a:hover {color: deepskyblue;}
+.right_menu a:active {color: black;}
 
 .title_screen {
     min-height: 600px;
