@@ -107,6 +107,8 @@
     border-radius: 5px;
 }
 
+.row {display: flex;}
+
 .headings {
     margin-top: 30px;
     font-family: "Oswald";
@@ -185,24 +187,70 @@
 
 .users_table {
     display: grid;
-    grid-template-columns: 15% 25% 10% 10% 10% 15% 15%;
+    grid-template-columns: 13% 22% 10% 9% 9% 13% 13% 11%;
     grid-column-gap: 2px;
     grid-row-gap: 2px;
 }
 
 .register, .login {
-    min-height: 600px;
+    min-height: 800px;
     background: url('pictures/office_04.jpg');
     background-size: cover;
-    background-position: 35% 65%;
+    background-position: 20px 32%;
 }
 
 .register_form, .login_form {
-    margin: 0 20%;
-    width: 60%;
+    margin: 0 25%;
+    width: 50%;
 }
 
 .register_form fieldset, .login_form fieldset {border: none;}
+
+.form-group {font-family: 'Oswald'; font-size: 21px;}
+.form-group label {
+    font-weight: 700;
+}
+
+.form-group input {
+    height: 45px;
+    width: 100%;
+    font-size: 18px;
+    border: 1px solid deepskyblue;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+
+.form-group .btn {
+    height: 45px;
+    width: 101.5%;
+    margin-top: 40px;
+    padding: 0;
+    background: deepskyblue;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    border: none;
+}
+
+.form-group .btn:hover {background: #383838}
+.form-group .btn:active {background: black}
+
+.form-check {
+    border: 1px solid red;
+    display: block;
+}
+
+.form-check input {
+    margin-top: 50px;
+    height: 35px;
+    border: 1px solid red;
+}
+
+.form-check label {
+    margin: 0;
+    padding: 0;
+    border: 1px solid red;
+}
 
 .footer_white {
     margin-bottom: 50px;
@@ -244,15 +292,13 @@
     margin-right: 15px;
 }
 
-#ig, #tw, #ln {
-    height: 25px;
+.social_media_image:hover {box-shadow: 2px 2px 2px 2px #383838;}
+.social_media_image:active {box-shadow: 2px 2px 2px 2px deepskyblue;}
+
+.bot_logo {
+    height: 30px;
 }
 
-.copyright p {
-    margin: 15px 0;
-    color: #c5c5c5;
-    text-align: left;
-}
 
 .adress {
     display: flex;
@@ -263,14 +309,6 @@
 
 .adress p {
     text-align: left;
-}
-
-.copyright_heading {
-    color: #c5c5c5;
-    text-align: left;
-}
-
-.adress p {
     color: #c5c5c5;
 }
 
@@ -293,10 +331,6 @@
     display: flex;
     flex-direction: column;
     justify-content: left;
-}
-
-.footer_column a, .footer_column_3 a {
-    text-decoration: none;
 }
 
 .footer_links, .transp_heading {
@@ -326,7 +360,7 @@
 }
 
 .black_link {
-    padding: 15px;
+    padding: 15px 45px 15px 0;
     font-size: 14px;
     font-weight: bold;
 }

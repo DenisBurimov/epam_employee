@@ -2,7 +2,7 @@ from service import app, db, bcrypt
 from flask import render_template, redirect, url_for, request, flash
 from models.models import Project, Task, User
 from datetime import date
-from service.forms import RegistrationForm, LoginForm
+from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -76,6 +76,7 @@ def tasks():
         tasks_selected = Task.query.filter_by(project_name=current_user.project_name)
     else:
         tasks_selected = Task.query.all()
+
     tasks_to_pass = []
     for tasks_query in tasks_selected:
         delta = tasks_query.task_deadline - date.today()
@@ -85,12 +86,38 @@ def tasks():
 
     return render_template('tasks.html', tasks=tasks_to_pass, c_user=current_user)
 
+
 @app.route("/users")
 def users():
+    users = None
     if current_user.role == "admin" or current_user.role == "PO":
         users = User.query.all()
+    elif current_user.role == "PM":
+        users = User.query.filter_by(project_name=current_user.project_name)
 
     return render_template('users.html', users=users)
+
+
+@app.route("/users/<int:user_id>", methods=['GET', 'POST'])
+def user_details(user_id):
+    form = UsersManagement()
+    user = User.query.filter_by(user_id=user_id).first()
+    if form.validate_on_submit():
+        user.role = form.role.data
+        user.salary = form.salary.data
+        user.bonus = form.bonus.data
+        user.task_name = form.task_name.data
+        user.project_name = form.project_name.data
+        db.session.commit()
+        flash("Your account has been updated", "success")
+        return redirect(url_for('users'))
+    elif request.method == 'GET':
+        form.role.data = user.role
+        form.salary.data = user.salary
+        form.bonus.data = user.bonus
+        form.task_name.data = user.task_name
+        form.project_name.data = user.project_name
+    return render_template('user_details.html', title='User Details', form=form)
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -128,7 +155,17 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route("/account")
+@app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('account.html', title='Account')
+    form = UpdateAccount()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash("Your account has been updated", "success")
+        return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('account.html', title='Account', form=form)

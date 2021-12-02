@@ -4,13 +4,13 @@
         <div class="wrapper">
                 <form method="POST" class="register_form">
                 {{ form.hidden_tag() }}
-                <fieldset class="form-group">
+                <fieldset>
                     <legend class="headings"><span>&#60</span> Join Our Team <span>&#62</span></legend>
                     <div class="form-group">
                         <p>{{ form.username.label(class="form-control-label") }}</p>
 
                         {% if form.username.errors %}
-                            {{ form.username(class="form-control form-control-lg is-invalid") }}
+                            {{ form.username }}
                             <div class="invalid-feedback">
                                 {% for error in form.username.errors %}
                                     <span>{{ error }}</span>
@@ -49,14 +49,14 @@
                     <div class="form-group">
                         <p>{{ form.confirm_password.label(class="form-control-label") }}</p>
                         {% if form.confirm_password.errors %}
-                            {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                            {{ form.confirm_password(placeholder="Confirm Password") }}
                             <div class="invalid-feedback">
                                 {% for error in form.confirm_password.errors %}
                                     <span>{{ error }}</span>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            {{ form.confirm_password(class="form-control form-control-lg") }}
+                            {{ form.confirm_password(placeholder="Confirm Password") }}
                         {% endif %}
                     </div>
                 </fieldset>

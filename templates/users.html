@@ -17,6 +17,7 @@
                 <div class="th"><p>Bonus</p></div>
                 <div class="th"><p>Task Name</p></div>
                 <div class="th"><p>Project Name</p></div>
+                <div class="th"><p></p></div>
                 {% for user in users %}
                     <div class="bright">{{ user.username }}</div>
                     <div class="dim">{{ user.email }}</div>
@@ -25,6 +26,11 @@
                     <div class="bright">{{ user.bonus }}</div>
                     <div class="dim">{{ user.task_name }}</div>
                     <div class="bright">{{ user.project_name }}</div>
+                    <div class="dim">
+                        <div class="details_button">
+                            <a href="/users/{{ user.user_id }}">Details</a>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>
