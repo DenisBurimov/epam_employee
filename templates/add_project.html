@@ -2,11 +2,12 @@
 {% block content %}
     <section class="register">
         <div class="wrapper">
-                <form method="POST" class="register_form">
+            <h1>Project Adding</h1>
+            <form method="POST" class="register_form">
                 {{ form.hidden_tag() }}
                 <fieldset class="form-group">
 
-                    <legend class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></legend>
+                    <legend class="headings"><span>&#60</span> Create New Project <span>&#62</span></legend>
                     <div class="form-group">
                         <p>{{ form.project_name.label(class="form-control-label") }}</p>
                         {{ form.project_name(class="form-control form-control-lg is-invalid") }}
@@ -26,9 +27,6 @@
                 </fieldset>
                 <div class="form-group">
                     {{ form.submit(class="btn btn-outline-info") }}
-                </div>
-                <div class="details_button delete_button">
-                    <a href="/projects/delete/{{ project.project_id }}">Delete</a>
                 </div>
             </form>
         </div>

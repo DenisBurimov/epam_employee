@@ -179,6 +179,18 @@
     margin: 40px 0 0 50px;
 }
 
+.add_project {
+    width: 150px;
+    margin: 40px 15px 0 0;
+}
+
+.delete_button {
+    height: 45px;
+    width: 101.5%;
+    margin-top: 35px;
+    background: red;
+}
+
 .details_button a {
     color: white;
     text-decoration: none;

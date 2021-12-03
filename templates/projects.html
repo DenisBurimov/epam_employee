@@ -8,7 +8,13 @@
 {% block content %}
     <section class="white_panel">
         <div class="wrapper">
-            <div class="headings"><span>&#60</span> Current Projects <span>&#62</span></div>
+
+            <div class="row">
+                <div class="headings"><span>&#60</span> Current Projects <span>&#62</span></div>
+                <div class="details_button add_project">
+                    <a href="{{ url_for('add_project') }}">Add Project</a>
+                </div>
+            </div>
             <div class="projects_table">
                     <div class="th"><p>Project Name</p></div>
                     <div class="th"><p>%</p></div>

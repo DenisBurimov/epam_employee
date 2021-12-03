@@ -29,6 +29,7 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
+
 class UpdateAccount(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -46,6 +47,7 @@ class UpdateAccount(FlaskForm):
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
 
+
 class UsersManagement(FlaskForm):
     role = StringField('Role', validators=[DataRequired(), Length(min=2, max=20)])
     salary = IntegerField('Salary')
@@ -54,9 +56,17 @@ class UsersManagement(FlaskForm):
     project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
     submit = SubmitField('Update')
 
+
 class ProjectUpdate(FlaskForm):
     project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
-    fulfilment = StringField('Accomplished', validators=[DataRequired(), Length(min=2, max=20)])
+    fulfilment = IntegerField('Accomplished')
     project_started = DateField('Project started')
     project_deadline = DateField('Project Deadline')
     submit = SubmitField('Update')
+
+class ProjectCreate(FlaskForm):
+    project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
+    fulfilment = IntegerField('Accomplished')
+    project_started = DateField('Project started')
+    project_deadline = DateField('Project Deadline')
+    submit = SubmitField('Create Project')

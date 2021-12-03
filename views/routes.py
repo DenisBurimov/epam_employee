@@ -2,7 +2,7 @@ from service import app, db, bcrypt
 from flask import render_template, redirect, url_for, request, flash
 from models.models import Project, Task, User
 from datetime import date
-from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate
+from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -17,7 +17,10 @@ def home():
 
 @app.route("/projects")
 def projects():
-    # Only project names, fulfilment, dates, backlog, finances
+    """
+    Change query to pull the project according to access level
+    :return:
+    """
     projects_info = []
     for project_query in Project.query.all():
         delta = project_query.project_deadline - date.today()
@@ -39,6 +42,18 @@ def projects():
         projects_info.append(project_query)
 
     return render_template('projects.html', projects=projects_info)
+
+
+@app.route("/add_project", methods=['GET', 'POST'])
+def add_project():
+    form = ProjectCreate()
+    if form.validate_on_submit():
+        project = Project(project_name=form.project_name.data, fulfilment=form.fulfilment.data, project_started=form.project_started.data, project_deadline=form.project_deadline.data)
+        db.session.add(project)
+        db.session.commit()
+        flash(f"Project has been successfully created", "success")
+        return redirect(url_for('projects'))
+    return render_template('add_project.html', title='Add Project', form=form)
 
 
 @app.route("/projects/<int:project_id>")
@@ -90,6 +105,14 @@ def project_update(project_id):
 
     return render_template('project_update.html', title="Project Update", project=project, form=form)
 
+@app.route("/projects/delete/<int:project_id>", methods=['GET', 'POST'])
+def project_deleting(project_id):
+    project = Project.query.get_or_404(project_id)
+    db.session.delete(project)
+    db.session.commit()
+    flash("The project was successfully deleted", "success")
+
+    return redirect(url_for('projects'))
 
 @app.route("/tasks")
 def tasks():
