@@ -5,7 +5,7 @@
                 <form method="POST" class="register_form">
                 {{ form.hidden_tag() }}
                 <fieldset class="form-group">
-                    <legend class="headings"><span>&#60</span> {{ current_user.username }} <span>&#62</span></legend>
+                    <legend class="headings"><span>&#60</span> {{ user.username }} <span>&#62</span></legend>
                     <div class="form-group">
                         <p>{{ form.role.label(class="form-control-label") }}</p>
                         {{ form.role(class="form-control form-control-lg is-invalid") }}

@@ -8,7 +8,12 @@
 {% block content %}
     <section class="white_panel ">
         <div class="wrapper">
-            <div class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></div>
+            <div class="row">
+                <div class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></div>
+                <div class="details_button update">
+                    <a href="/projects/update/{{ project.project_id }}">Update</a>
+                </div>
+            </div>
             <div class="project_details">
                 <div class="th"><p>Done</p></div>
                 <div class="th"><p>Deadline</p></div>

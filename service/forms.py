@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from models.models import User
 from flask_login import current_user
@@ -52,4 +52,11 @@ class UsersManagement(FlaskForm):
     bonus = IntegerField('Bonus')
     task_name = StringField('Task Name', validators=[DataRequired(), Length(min=2, max=20)])
     project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
+    submit = SubmitField('Update')
+
+class ProjectUpdate(FlaskForm):
+    project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
+    fulfilment = StringField('Accomplished', validators=[DataRequired(), Length(min=2, max=20)])
+    project_started = DateField('Project started')
+    project_deadline = DateField('Project Deadline')
     submit = SubmitField('Update')

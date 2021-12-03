@@ -2,7 +2,7 @@ from service import app, db, bcrypt
 from flask import render_template, redirect, url_for, request, flash
 from models.models import Project, Task, User
 from datetime import date
-from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement
+from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -70,6 +70,27 @@ def project_details(project_id):
     return render_template('project_details.html', project=project, tasks=tasks)
 
 
+@app.route("/projects/update/<int:project_id>", methods=['GET', 'POST'])
+def project_update(project_id):
+    form = ProjectUpdate()
+    project = Project.query.filter_by(project_id=project_id).first()
+    if form.validate_on_submit():
+        project.project_name = form.project_name.data
+        project.fulfilment = form.fulfilment.data
+        project.project_started = form.project_started.data
+        project.project_deadline = form.project_deadline.data
+        db.session.commit()
+        flash(f"{project} has been updated", "success")
+        return redirect(url_for('projects'))
+    elif request.method == 'GET':
+        form.project_name.data = project.project_name
+        form.fulfilment.data = project.fulfilment
+        form.project_started.data = project.project_started
+        form.project_deadline.data = project.project_deadline
+
+    return render_template('project_update.html', title="Project Update", project=project, form=form)
+
+
 @app.route("/tasks")
 def tasks():
     if current_user.project_name:
@@ -117,7 +138,7 @@ def user_details(user_id):
         form.bonus.data = user.bonus
         form.task_name.data = user.task_name
         form.project_name.data = user.project_name
-    return render_template('user_details.html', title='User Details', form=form)
+    return render_template('user_details.html', title='User Details', user=user, form=form)
 
 
 @app.route("/register", methods=['GET', 'POST'])

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+    <section class="register">
+        <div class="wrapper">
+                <form method="POST" class="register_form">
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+
+                    <legend class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></legend>
+                    <div class="form-group">
+                        <p>{{ form.project_name.label(class="form-control-label") }}</p>
+                        {{ form.project_name(class="form-control form-control-lg is-invalid") }}
+                    </div>
+                    <div class="form-group">
+                        <p>{{ form.fulfilment.label(class="form-control-label") }}</p>
+                        {{ form.fulfilment(class="form-control form-control-lg is-invalid") }}
+                    </div>
+                    <div class="form-group">
+                        <p>{{ form.project_started.label(class="form-control-label") }}</p>
+                        {{ form.project_started(class="form-control form-control-lg is-invalid") }}
+                    </div>
+                    <div class="form-group">
+                        <p>{{ form.project_deadline.label(class="form-control-label") }}</p>
+                        {{ form.project_deadline(class="form-control form-control-lg is-invalid") }}
+                    </div>
+                </fieldset>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+{% endblock content %}
