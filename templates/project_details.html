@@ -10,9 +10,11 @@
         <div class="wrapper">
             <div class="row">
                 <div class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></div>
-                <div class="details_button update">
-                    <a href="/projects/update/{{ project.project_id }}">Update</a>
-                </div>
+                {% if (current_user.role == "PO" or current_user.role == "admin") %}
+                    <div class="details_button update">
+                        <a href="/projects/update/{{ project.project_id }}">Update</a>
+                    </div>
+                {% endif %}
             </div>
             <div class="project_details">
                 <div class="th"><p>Done</p></div>
@@ -43,7 +45,12 @@
 
     <section class="white_panel">
         <div class="wrapper">
-            <div class="headings"><span>&#60</span> {{ project.project_name }} - Tasks <span>&#62</span></div>
+            <div class="row">
+                <div class="headings"><span>&#60</span> {{ project.project_name }} - Tasks <span>&#62</span></div>
+                <div class="details_button add_project">
+                    <a href="{{ url_for('task_adding') }}">Add Task</a>
+                </div>
+            </div>
             <div class="tasks">
                 <div class="th"><p>Project</p></div>
                 <div class="th"><p>Task</p></div>
@@ -52,6 +59,7 @@
                 <div class="th th_horizontal"><p>Days to</p><p>deadline</p></div>
                 <div class="th"><p>Team</p></div>
                 <div class="th"><p>Email</p></div>
+                <div class="th"><p></p></div>
                 {% for task in tasks %}
                     <div class="bright">{{ task.project_name }}</div>
                     <div class="dim">{{ task.task_name }}</div>
@@ -67,6 +75,11 @@
                         {% for current_user in task.users %}
                             <p>{{current_user.email}}</p>
                         {% endfor %}
+                    </div>
+                    <div class="dim">
+                        <div class="details_button">
+                            <a href="/task_update/{{ task.task_id }}">Update</a>
+                        </div>
                     </div>
                 {% endfor %}
             </div>

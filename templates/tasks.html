@@ -17,6 +17,7 @@
                 <div class="th th_horizontal"><p>Days to</p><p>deadline</p></div>
                 <div class="th"><p>Team</p></div>
                 <div class="th"><p>Email</p></div>
+                <div class="th"><p></p></div>
                 {% for task in tasks %}
                     <div class="bright">{{ task.project_name }}</div>
                     <div class="dim">{{ task.task_name }}</div>
@@ -32,6 +33,11 @@
                         {% for each_user in task.users %}
                             <p>{{each_user.email}}</p>
                         {% endfor %}
+                    </div>
+                    <div class="dim">
+                        <div class="details_button">
+                            <a href="/task_update/{{ task.task_id }}">Update</a>
+                        </div>
                     </div>
                 {% endfor %}
             </div>

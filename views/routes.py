@@ -2,7 +2,7 @@ from service import app, db, bcrypt
 from flask import render_template, redirect, url_for, request, flash
 from models.models import Project, Task, User
 from datetime import date
-from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate
+from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate, TaskCreate
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -18,11 +18,15 @@ def home():
 @app.route("/projects")
 def projects():
     """
-    Change query to pull the project according to access level
+
     :return:
     """
+    if current_user.project_name:
+        projects_selected = Project.query.filter_by(project_name=current_user.project_name)
+    else:
+        projects_selected = Project.query.all()
     projects_info = []
-    for project_query in Project.query.all():
+    for project_query in projects_selected:
         delta = project_query.project_deadline - date.today()
         project_query.timedifference = delta.days
 
@@ -131,6 +135,59 @@ def tasks():
     return render_template('tasks.html', tasks=tasks_to_pass, c_user=current_user)
 
 
+@app.route("/task_adding", methods=['GET', 'POST'])
+def task_adding():
+    form = TaskCreate()
+    if form.validate_on_submit():
+        task = Task(
+            project_name=form.project_name.data,
+            task_name=form.task_name.data,
+            task_fulfilment=form.task_fulfilment.data,
+            task_started=form.task_started.data,
+            task_deadline=form.task_deadline.data
+        )
+        db.session.add(task)
+        db.session.commit()
+        flash(f"Task {form.task_name.data} has been successfully created", "success")
+        return redirect(url_for('tasks'))
+    return render_template('task_adding.html', title='Add Task', form=form)
+
+
+@app.route("/task_update/<int:task_id>", methods=['GET', 'POST'])
+def task_update(task_id):
+    form = TaskCreate()
+    task = Task.query.filter_by(task_id=task_id).first()
+    project = Project.query.filter_by(project_name=task.project_name).first()
+    if form.validate_on_submit():
+        task.project_name = form.project_name.data
+        task.task_name = form.task_name.data
+        task.task_fulfilment = form.task_fulfilment.data
+        task.task_started = form.task_started.data
+        task.task_deadline = form.task_deadline.data
+        db.session.commit()
+        flash(f"{task} has been updated", "success")
+        return redirect(url_for('project_details', project_id=project.project_id))
+    elif request.method == 'GET':
+        form.project_name.data = task.project_name
+        form.task_name.data = task.task_name
+        form.task_fulfilment.data = task.task_fulfilment
+        form.task_started.data = task.task_started
+        form.task_deadline.data = task.task_deadline
+
+    return render_template('task_update.html', title='Update Task', form=form, task=task)
+
+
+@app.route("/task_delete")
+def task_delete(task_id):
+    task = Task.query.get_or_404(task_id)
+    project = Project.query.filter_by(project_name=task.project_name).first()
+    db.session.delete(task)
+    db.session.commit()
+    flash(f"{task.task_name} was successfully deleted", "success")
+
+    return redirect(url_for('project_details', project_id=project.project_id))
+
+
 @app.route("/users")
 def users():
     users = None
@@ -179,8 +236,6 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()

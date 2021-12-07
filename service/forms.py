@@ -64,9 +64,19 @@ class ProjectUpdate(FlaskForm):
     project_deadline = DateField('Project Deadline')
     submit = SubmitField('Update')
 
+
 class ProjectCreate(FlaskForm):
     project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
     fulfilment = IntegerField('Accomplished')
     project_started = DateField('Project started')
     project_deadline = DateField('Project Deadline')
     submit = SubmitField('Create Project')
+
+
+class TaskCreate(FlaskForm):
+    project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
+    task_name = StringField('Task Name', validators=[DataRequired(), Length(min=2, max=20)])
+    task_fulfilment = IntegerField('Accomplished')
+    task_started = DateField('Task started')
+    task_deadline = DateField('Task Deadline')
+    submit = SubmitField('Submit')
