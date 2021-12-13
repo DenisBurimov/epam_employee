@@ -1,50 +1,59 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Home Page
+Home Page
 {% endblock title %}
 
 
 {% block content %}
-    <section class="title_screen">
-        <div class="title_outer wrapper">
-            <div class="project_documentation">
-                <p>Project</p>
-                <p>documentation</p>
-            </div>
+<section class="title_screen">
+    <div class="title_outer wrapper">
+        <div class="project_documentation">
+            <p>Project</p>
+            <p>documentation</p>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="white_panel">
-        <div class="wrapper">
-            {% for project in projects %}
-                <p>{{ project.project_name }}, {{ project.fulfilment }}%, {{ project.project_started }}, {{ project.project_deadline }}</p>
+<section class="white_panel">
+    <div class="wrapper">
+        <p>This app is created to manage company projects, tasks on these projects and team members, that are on these
+            tasks.
+
+            Normally there are different access levels in every company. For example a product owner has access to all
+            information about all projects, all tasks and all teams. And developers have information only about their
+            projects and tasks.
+
+            So, to start, let’s suppose, that we are a new team member. We are a developer, who has just come on board.
+            First of all we should register.
+        </p>
+    </div>
+</section>
+
+<section class="grey_panel">
+    <div class="wrapper">
+        <div class="description_header">
+            <h3>Some description</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum harum id ipsam magni molestiae molestias
+                sunt! Animi corporis est exercitationem fuga, labore nemo obcaecati officia quae quasi qui repellat
+                suscipit?</p>
+        </div>
+
+        <div class="white_text">
+            {% for task in tasks %}
+            <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started }}, {{ task.task_deadline }}</p>
             {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="grey_panel">
-        <div class="wrapper">
-            <div class="description_header">
-                <h3>Some description</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum harum id ipsam magni molestiae molestias sunt! Animi corporis est exercitationem fuga, labore nemo obcaecati officia quae quasi qui repellat suscipit?</p>
-            </div>
-
-            <div class="white_text">
-                {% for task in tasks %}
-                    <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started }}, {{ task.task_deadline }}</p>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-
-    <section class="white_panel">
-        <div class="wrapper">
-            {% for user in users %}
-                <p>{{ user.username }}, {{ user.email }}, {{ user.role }}</p>
-            {% endfor %}
-        </div>
-    </section>
+<section class="white_panel">
+    <div class="wrapper">
+        {% for user in users %}
+        <p>{{ user.username }}, {{ user.email }}, {{ user.role }}</p>
+        {% endfor %}
+    </div>
+</section>
 
 
 {% endblock content %}
