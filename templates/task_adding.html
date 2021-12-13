@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block title %}
+    Add Task
+{% endblock title %}
+
 {% block content %}
     <section class="register">
         <div class="wrapper">
@@ -13,7 +18,16 @@
                     </div>
                     <div class="form-group">
                         <p>{{ form.task_name.label(class="form-control-label") }}</p>
-                        {{ form.task_name(class="form-control form-control-lg is-invalid") }}
+                        {% if form.task_name.errors %}
+                            {{ form.task_name }}
+                            <div class="invalid-feedback">
+                                {% for error in form.task_name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.task_name(class="form-control form-control-lg is-invalid") }}
+                        {% endif %}
                     </div>
                     <div class="form-group">
                         <p>{{ form.task_fulfilment.label(class="form-control-label") }}</p>

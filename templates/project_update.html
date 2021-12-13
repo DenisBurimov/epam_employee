@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block title %}
+    Project Update
+{% endblock title %}
+
 {% block content %}
     <section class="register">
         <div class="wrapper">
@@ -9,7 +14,16 @@
                     <legend class="headings"><span>&#60</span> {{ project.project_name }} <span>&#62</span></legend>
                     <div class="form-group">
                         <p>{{ form.project_name.label(class="form-control-label") }}</p>
-                        {{ form.project_name(class="form-control form-control-lg is-invalid") }}
+                        {% if form.project_name.errors %}
+                            {{ form.project_name }}
+                            <div class="invalid-feedback">
+                                {% for error in form.project_name.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.project_name(class="form-control form-control-lg is-invalid") }}
+                        {% endif %}
                     </div>
                     <div class="form-group">
                         <p>{{ form.fulfilment.label(class="form-control-label") }}</p>

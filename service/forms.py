@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from models.models import User
+from models.models import User, Task, Project
 from flask_login import current_user
 
 
@@ -64,6 +64,11 @@ class ProjectUpdate(FlaskForm):
     project_deadline = DateField('Project Deadline')
     submit = SubmitField('Update')
 
+    def validate_project_name(self, project_name):
+        project = Project.query.filter_by(project_name=project_name.data).first()
+        if project:
+            raise ValidationError('That project name is already taken. Please choose a different one.')
+
 
 class ProjectCreate(FlaskForm):
     project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
@@ -71,6 +76,11 @@ class ProjectCreate(FlaskForm):
     project_started = DateField('Project started')
     project_deadline = DateField('Project Deadline')
     submit = SubmitField('Create Project')
+
+    def validate_project_name(self, project_name):
+        project = Project.query.filter_by(project_name=project_name.data).first()
+        if project:
+            raise ValidationError('That project name is already taken. Please choose a different one.')
 
 
 class TaskCreate(FlaskForm):
@@ -80,3 +90,9 @@ class TaskCreate(FlaskForm):
     task_started = DateField('Task started')
     task_deadline = DateField('Task Deadline')
     submit = SubmitField('Submit')
+
+    def validate_task_name(self, task_name):
+        task = Task.query.filter_by(task_name=task_name.data).first()
+        if task:
+            raise ValidationError('That task name is already taken. Please choose a different one.')
+
