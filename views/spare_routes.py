@@ -19,34 +19,43 @@ def home():
 @app.route("/projects")
 def projects():
     """
-    Здесь вьюшка импортирует класс из реста,
-    создаёт экземпляр этого класса,
-    и этот экземпляр выполняет метод гет,
-    который возвращает список проектов.
-    *Правда, надо сделать json
-    функция возвращает рендер html-страницы projects.html,
-    в который она передайт список проектов (projects=projects_info)
+
+    :return:
     """
-    projects_query = PostREST()
-    projects_info = projects_query.get()
+    if current_user.project_name:
+        projects_selected = Project.query.filter_by(project_name=current_user.project_name)
+    else:
+        projects_selected = Project.query.all()
+    projects_info = []
+    for project_query in projects_selected:
+        delta = project_query.project_deadline - date.today()
+        project_query.timedifference = delta.days
+
+        project_query.users = User.query.filter_by(project_name=project_query.project_name)
+        project_query.salary_plus_bonuses = 0
+        for each_user in project_query.users:
+            project_query.salary_plus_bonuses += each_user.salary + each_user.bonus
+
+        # Now we make a total paid at the moment
+        project_query.time_since_started = (date.today() - project_query.project_started).days
+        project_query.currently_paid = project_query.time_since_started * project_query.salary_plus_bonuses // 30
+
+        # Expected total payments, when the project will be done
+        project_query.yet_to_pay = project_query.timedifference * project_query.salary_plus_bonuses // 30
+        project_query.expected_total_payments = project_query.yet_to_pay + project_query.currently_paid
+
+        projects_info.append(project_query)
 
     return render_template('projects.html', projects=projects_info)
 
 
 @app.route("/add_project", methods=['GET', 'POST'])
 def add_project():
-    """
-    Здесь создаём экземпляр класса формы создания проекта
-    Затем, если форма проходит валидацию,
-    то создаём экземпляр класса PostREST
-    и вызываем его метод пост
-    После чего возвращаем ридайрект на страницу списка проектов
-    :return: рендерим страницу добавления проекта, если не было отправки формы либо не было валидации
-    """
     form = ProjectCreate()
     if form.validate_on_submit():
-        project_query = PostREST()
-        project_posted = project_query.post(project_name=form.project_name.data, fulfilment=form.fulfilment.data, project_started=form.project_started.data, project_deadline=form.project_deadline.data)
+        project = Project(project_name=form.project_name.data, fulfilment=form.fulfilment.data, project_started=form.project_started.data, project_deadline=form.project_deadline.data)
+        db.session.add(project)
+        db.session.commit()
         flash(f"Project has been successfully created", "success")
         return redirect(url_for('projects'))
     return render_template('add_project.html', title='Add Project', form=form)
@@ -54,21 +63,29 @@ def add_project():
 
 @app.route("/projects/<int:project_id>")
 def project_details(project_id):
-    """
-    Эта функция для отображения всех деталей проекта
-    включая задания на проекте и команду проекта
-    Получаем ид проекта из адресной строки
-    :param project_id:
-    Создаём экземпляр класса PostREST
-    Его метод get_details возвращает нам тюпл из двух элементов:
-    первый элемент - словарь проекта
-    второй элемент - словарь заданий и участников команды
-    :return: рендер html-страницы, в который мы передаём проект и задания
-    """
-    project_query = PostREST()
-    get_getails = project_query.get_details(project_id)
-    project = get_getails[0]
-    tasks = get_getails[1]
+    project = Project.query.get(project_id)
+    delta = project.project_deadline - date.today()
+    project.timedifference = delta.days
+
+    project.users = User.query.filter_by(project_name=project.project_name)
+    project.salary_plus_bonuses = 0
+    for each_user in project.users:
+        project.salary_plus_bonuses += each_user.salary + each_user.bonus
+
+    # Now we make a total paid at the moment
+    project.time_since_started = (date.today() - project.project_started).days
+    project.currently_paid = project.time_since_started * project.salary_plus_bonuses // 30
+
+    # Expected total payments, when the project will be done
+    project.yet_to_pay = project.timedifference * project.salary_plus_bonuses // 30
+    project.expected_total_payments = project.yet_to_pay + project.currently_paid
+
+    tasks = []
+    for tasks_query in Task.query.filter_by(project_name=project.project_name):
+        delta = tasks_query.task_deadline - date.today()
+        tasks_query.timedifference = delta.days
+        tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
+        tasks.append(tasks_query)
 
     return render_template('project_details.html', project=project, tasks=tasks)
 
@@ -253,8 +270,8 @@ def account():
         form.email.data = current_user.email
     return render_template('account.html', title='Account', form=form)
 
-# @app.route("/testing_rest")
-# def testing():
-#     posts_query = PostREST()
-#     posts = posts_query.get()
-#     return render_template('testing.html', projects=posts)
+@app.route("/testing_rest")
+def testing():
+    posts_query = PostREST()
+    posts = posts_query.get()
+    return render_template('testing.html', projects=posts)

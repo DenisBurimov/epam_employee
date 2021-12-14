@@ -95,4 +95,3 @@ class TaskCreate(FlaskForm):
         task = Task.query.filter_by(task_name=task_name.data).first()
         if task:
             raise ValidationError('That task name is already taken. Please choose a different one.')
-
