@@ -4,7 +4,7 @@ from models.models import Project, Task, User
 from datetime import date
 from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate, TaskCreate
 from flask_login import login_user, current_user, logout_user, login_required
-from rest.projects_rest import PostREST
+from rest.projects_rest import ProjectREST
 
 
 @app.route("/")
@@ -272,6 +272,6 @@ def account():
 
 @app.route("/testing_rest")
 def testing():
-    posts_query = PostREST()
+    posts_query = ProjectREST()
     posts = posts_query.get()
     return render_template('testing.html', projects=posts)

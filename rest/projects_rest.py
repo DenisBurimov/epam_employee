@@ -1,14 +1,10 @@
-from service import app, db
-from flask import Flask, render_template, jsonify, request, redirect
+from service import db
 from models.models import Project, Task, User
 from flask_login import current_user
 from datetime import date
-from flask_restful import Resource, Api
-
-# api = Api(app)
 
 
-class PostREST():
+class ProjectREST():
     def get(self):
         """
         Метод гет сначала проверяет, есть ли у текущего юзера назначенный проект.
@@ -118,11 +114,34 @@ class PostREST():
 
         return (project, tasks)
 
-    def put(self):
-        pass
+    def put(self, project_id, project_name, fulfilment, project_started, project_deadline):
+        """
+        Если форма апдейта проекта валидирована,
+        получаем из вьюшки параметры записи в базу:
+        :param project_id:
+        :param project_name:
+        :param fulfilment:
+        :param project_started:
+        :param project_deadline:
+        Делаем запрос в базу экземпляра класс экземпляра Project с заданным ид
+        и перезаписываем поля этого класса, используя полученные из вьюшки параметры
+        """
+        project = Project.query.filter_by(project_id=project_id).first()
+        project.project_name = project_name
+        project.fulfilment = fulfilment
+        project.project_started = project_started
+        project.project_deadline = project_deadline
+        db.session.commit()
 
 
-    def delete(self):
-        pass
-
-# api.add_resource(PostREST, "/testing")
+    def delete(self, project_id):
+        """
+        Получаем из вьюшки ид проекта
+        Делаем запрос в базу и получаем проект с данным ид
+        Удаляем проект из базы
+        Коммитим изменения в базе
+        :return:
+        """
+        project = Project.query.get_or_404(project_id)
+        db.session.delete(project)
+        db.session.commit()

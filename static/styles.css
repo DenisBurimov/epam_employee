@@ -430,6 +430,13 @@
     color: seagreen;
 }
 
+.alert-danger {
+    background: #ffb3b3;
+    border: 2px solid darkred;
+    border-radius: 3px;
+    color: darkred;
+}
+
 .invalid-feedback {
     width: 98%;
     margin: 25px 0;

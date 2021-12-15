@@ -64,11 +64,6 @@ class ProjectUpdate(FlaskForm):
     project_deadline = DateField('Project Deadline')
     submit = SubmitField('Update')
 
-    def validate_project_name(self, project_name):
-        project = Project.query.filter_by(project_name=project_name.data).first()
-        if project:
-            raise ValidationError('That project name is already taken. Please choose a different one.')
-
 
 class ProjectCreate(FlaskForm):
     project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
@@ -95,3 +90,12 @@ class TaskCreate(FlaskForm):
         task = Task.query.filter_by(task_name=task_name.data).first()
         if task:
             raise ValidationError('That task name is already taken. Please choose a different one.')
+
+
+class TaskUpdate(FlaskForm):
+    project_name = StringField('Project Name', validators=[DataRequired(), Length(min=2, max=20)])
+    task_name = StringField('Task Name', validators=[DataRequired(), Length(min=2, max=20)])
+    task_fulfilment = IntegerField('Accomplished')
+    task_started = DateField('Task started')
+    task_deadline = DateField('Task Deadline')
+    submit = SubmitField('Submit')
