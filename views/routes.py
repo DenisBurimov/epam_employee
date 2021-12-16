@@ -1,10 +1,11 @@
 from service import app, db, bcrypt
 from flask import render_template, redirect, url_for, request, flash
 from models.models import Project, Task, User
-from datetime import date
-from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate, TaskCreate, TaskUpdate
+from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate, \
+    TaskCreate, TaskUpdate
 from flask_login import login_user, current_user, logout_user, login_required
 from rest.projects_rest import ProjectREST
+from rest.task_rest import TaskREST
 
 
 @app.route("/")
@@ -46,7 +47,12 @@ def add_project():
     form = ProjectCreate()
     if form.validate_on_submit():
         project_query = ProjectREST()
-        project_posted = project_query.post(project_name=form.project_name.data, fulfilment=form.fulfilment.data, project_started=form.project_started.data, project_deadline=form.project_deadline.data)
+        project_posted = project_query.post(
+            project_name=form.project_name.data,
+            fulfilment=form.fulfilment.data,
+            project_started=form.project_started.data,
+            project_deadline=form.project_deadline.data
+        )
         flash(f"Project has been successfully created", "success")
         return redirect(url_for('projects'))
     return render_template('add_project.html', title='Add Project', form=form)
@@ -66,7 +72,7 @@ def project_details(project_id):
     :return: рендер html-страницы, в который мы передаём проект и задания
     """
     project_query = ProjectREST()
-    get_getails = project_query.get_details(project_id)
+    get_getails = project_query.get_project_details(project_id)
     project = get_getails[0]
     tasks = get_getails[1]
 
@@ -93,8 +99,9 @@ def project_update(project_id):
     """
     form = ProjectUpdate()
     project_query = ProjectREST()
-    project = project_query.get_details(project_id)
-    if form.validate_on_submit() and (not form.project_name.data in Project.query.all() or form.project_name.data == project[0].project_name):
+    project = project_query.get_project_details(project_id)
+    if form.validate_on_submit() and (
+            not form.project_name.data in Project.query.all() or form.project_name.data == project[0].project_name):
         try:
             project_updated = project_query.put(
                 project_id=project_id,
@@ -105,8 +112,8 @@ def project_update(project_id):
             )
             flash(f"{form.project_name.data} has been updated", "success")
             return redirect(url_for('projects'))
-        except:
-            flash(f"The name  '{form.project_name.data}'  has already taken", "danger")
+        except BaseException as e:
+            flash(f"Project name is already taken", "danger")
             return redirect(url_for('projects'))
     elif request.method == 'GET':
         form.project_name.data = project[0].project_name
@@ -115,6 +122,7 @@ def project_update(project_id):
         form.project_deadline.data = project[0].project_deadline
 
     return render_template('project_update.html', title="Project Update", project=project[0], form=form)
+
 
 @app.route("/projects/delete/<int:project_id>", methods=['GET', 'POST'])
 def project_deleting(project_id):
@@ -132,36 +140,42 @@ def project_deleting(project_id):
     flash("The project was successfully deleted", "success")
     return redirect(url_for('projects'))
 
+
 @app.route("/tasks")
 def tasks():
-    if current_user.project_name:
-        tasks_selected = Task.query.filter_by(project_name=current_user.project_name)
-    else:
-        tasks_selected = Task.query.all()
-
-    tasks_to_pass = []
-    for tasks_query in tasks_selected:
-        delta = tasks_query.task_deadline - date.today()
-        tasks_query.timedifference = delta.days
-        tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
-        tasks_to_pass.append(tasks_query)
+    """
+    Создаём экземпляр класса TaskREST
+    с тем, чтобы его метод get вернул список заданий
+    Возвращаем рендер страницы, в который передаём список заданий и текущего пользователя
+    :return:
+    """
+    task_query = TaskREST()
+    tasks_to_pass = task_query.get()
 
     return render_template('tasks.html', tasks=tasks_to_pass, c_user=current_user)
 
 
 @app.route("/task_adding", methods=['GET', 'POST'])
 def task_adding():
+    """
+    Создаём форму на основе класса TaskCreate
+    Создаём экземпляр класса TaskREST,
+    чтобы его метод post записал в базу новое задание
+    В метод post передаём параметры.
+    Выводим флеш сообщение, что всё хорошо
+    Возвращаем редайрект на страницу с заданиями
+    :return:
+    """
     form = TaskCreate()
     if form.validate_on_submit():
-        task = Task(
+        task_query = TaskREST()
+        task_query.post(
             project_name=form.project_name.data,
             task_name=form.task_name.data,
             task_fulfilment=form.task_fulfilment.data,
             task_started=form.task_started.data,
             task_deadline=form.task_deadline.data
         )
-        db.session.add(task)
-        db.session.commit()
         flash(f"Task {form.task_name.data} has been successfully created", "success")
         return redirect(url_for('tasks'))
     return render_template('task_adding.html', title='Add Task', form=form)
@@ -169,18 +183,41 @@ def task_adding():
 
 @app.route("/task_update/<int:task_id>", methods=['GET', 'POST'])
 def task_update(task_id):
+    """
+    Создаём форму на основе класса TaskUpdate
+    создаём экземпляр класса TaskREST,
+    чтобы его метод get_task_details вернул нам данные о задании,
+    а его метод put апдейтнул задание
+    В методы get_task_details и put мы передаём task_id
+    :param task_id:
+    Дальше, если форма валидирована и имя имя задания уникально,
+    вызываем метод put и передаём в него все параметры задания
+    В случае успеха выводится флеш сообщение об успехе
+    и возвращается ридайрект на страницу проекта
+    Если имя занято, выводится сообщение об этом
+    Если форма пуста, то в неё передаются данные из метода get_task_details
+    и возвращается рендер страницы, в который передаются пропертиз задания
+    :return:
+    """
     form = TaskUpdate()
-    task = Task.query.filter_by(task_id=task_id).first()
-    project = Project.query.filter_by(project_name=task.project_name).first()
-    if form.validate_on_submit():
-        task.project_name = form.project_name.data
-        task.task_name = form.task_name.data
-        task.task_fulfilment = form.task_fulfilment.data
-        task.task_started = form.task_started.data
-        task.task_deadline = form.task_deadline.data
-        db.session.commit()
-        flash(f"{task} has been updated", "success")
-        return redirect(url_for('project_details', project_id=project.project_id))
+    task_query = TaskREST()
+    task = task_query.get_task_details(task_id)
+    if form.validate_on_submit() and (
+            not form.task_name.data in Task.query.all() or form.task_name.data == task.task_name):
+        try:
+            task_updated = task_query.put(
+                task_id=task_id,
+                project_name=form.project_name.data,
+                task_name=form.task_name.data,
+                task_fulfilment=form.task_fulfilment.data,
+                task_started=form.task_started.data,
+                task_deadline=form.task_deadline.data,
+            )
+            flash(f"{form.task_name.data} has been updated", "success")
+            return redirect(url_for('project_details', project_id=task.project_id))
+        except BaseException as e:
+            flash(f"Task name is already taken", "danger")
+            return redirect(url_for('project_details', project_id=task.project_id))
     elif request.method == 'GET':
         form.project_name.data = task.project_name
         form.task_name.data = task.task_name
@@ -191,16 +228,24 @@ def task_update(task_id):
     return render_template('task_update.html', title='Update Task', form=form, task=task)
 
 
-@app.route("/task_delete")
+@app.route("/task_update/delete/<int:task_id>")
 def task_delete(task_id):
-    task = Task.query.get_or_404(task_id)
-    project = Project.query.filter_by(project_name=task.project_name).first()
-    db.session.delete(task)
-    db.session.commit()
+    """
+    Создаём форму на основе класса TaskUpdate
+    создаём экземпляр класса TaskREST,
+    чтобы его метод get_task_details вернул нам данные о задании,
+    а его метод delete удалил задание
+    В методы get_task_details и delete мы передаём task_id
+    :param task_id:
+    :return:
+    """
+    task_query = TaskREST()
+    task = task_query.get_task_details(task_id)
+    task_deleted = task_query.delete(task_id)
+
     flash(f"{task.task_name} was successfully deleted", "success")
 
-    return redirect(url_for('project_details', project_id=project.project_id))
-
+    return redirect(url_for('project_details', project_id=task.project_id))
 
 @app.route("/users")
 def users():

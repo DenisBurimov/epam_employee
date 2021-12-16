@@ -73,7 +73,7 @@ class ProjectREST():
         db.session.add(project)
         db.session.commit()
 
-    def get_details(self, project_id):
+    def get_project_details(self, project_id):
         """
         Получаем ид проекта из вьюшки (там вызывается этот метод)
         :param project_id:
