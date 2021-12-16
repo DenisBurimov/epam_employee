@@ -6,6 +6,7 @@ from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManag
 from flask_login import login_user, current_user, logout_user, login_required
 from rest.projects_rest import ProjectREST
 from rest.task_rest import TaskREST
+from rest.user_rest import UserREST
 
 
 @app.route("/")
@@ -247,47 +248,34 @@ def task_delete(task_id):
 
     return redirect(url_for('project_details', project_id=task.project_id))
 
+
 @app.route("/users")
 def users():
-    users = None
-    if current_user.role == "admin" or current_user.role == "PO":
-        users = User.query.all()
-    elif current_user.role == "PM":
-        users = User.query.filter_by(project_name=current_user.project_name)
+    """
+
+    :return:
+    """
+    users_query = UserREST()
+    users = users_query.get()
 
     return render_template('users.html', users=users)
 
 
-@app.route("/users/<int:user_id>", methods=['GET', 'POST'])
-def user_details(user_id):
-    form = UsersManagement()
-    user = User.query.filter_by(user_id=user_id).first()
-    if form.validate_on_submit():
-        user.role = form.role.data
-        user.salary = form.salary.data
-        user.bonus = form.bonus.data
-        user.task_name = form.task_name.data
-        user.project_name = form.project_name.data
-        db.session.commit()
-        flash("Your account has been updated", "success")
-        return redirect(url_for('users'))
-    elif request.method == 'GET':
-        form.role.data = user.role
-        form.salary.data = user.salary
-        form.bonus.data = user.bonus
-        form.task_name.data = user.task_name
-        form.project_name.data = user.project_name
-    return render_template('user_details.html', title='User Details', user=user, form=form)
-
-
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    """
+
+    :return:
+    """
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, hashed_password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+        user_query = UserREST()
+        user = user_query.post(
+            username=form.username.data,
+            email=form.email.data,
+            hashed_password=hashed_password
+        )
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
@@ -316,14 +304,47 @@ def logout():
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
+    """
+
+    :return:
+    """
     form = UpdateAccount()
     if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        db.session.commit()
+        user_query = UserREST()
+        user = user_query.put_by_user(username=form.username.data, email=form.email.data)
         flash("Your account has been updated", "success")
         return redirect(url_for('account'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('account.html', title='Account', form=form)
+
+
+@app.route("/users/<int:user_id>", methods=['GET', 'POST'])
+def user_details(user_id):
+    """
+
+    :param user_id:
+    :return:
+    """
+    form = UsersManagement()
+    user_query = UserREST()
+    user = user_query.get_user_details(user_id)
+    if form.validate_on_submit():
+        user_updated = user_query.put_by_admin(
+            user_id=user_id,
+            role=form.role.data,
+            salary=form.salary.data,
+            bonus=form.bonus.data,
+            task_name=form.task_name.data,
+            project_name=form.project_name.data
+        )
+        flash("Your account has been updated", "success")
+        return redirect(url_for('users'))
+    elif request.method == 'GET':
+        form.role.data = user.role
+        form.salary.data = user.salary
+        form.bonus.data = user.bonus
+        form.task_name.data = user.task_name
+        form.project_name.data = user.project_name
+    return render_template('user_details.html', title='User Details', user=user, form=form)
