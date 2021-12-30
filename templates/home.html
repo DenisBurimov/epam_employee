@@ -16,44 +16,208 @@
 </section>
 
 <section class="white_panel">
-    <div class="wrapper">
-        <p>This app is created to manage company projects, tasks on these projects and team members, that are on these
-            tasks.
-
-            Normally there are different access levels in every company. For example a product owner has access to all
+    <div class="wrapper docs">
+        <div class="documentation_text">
+            <p>This app is created to manage company projects, tasks on these projects and team members, that are on these
+            tasks.</p>
+            <br>
+            <p>Normally there are different access levels in every company. For example, a product owner has access to all
             information about all projects, all tasks and all teams. And developers have information only about their
-            projects and tasks.
-
-            So, to start, let’s suppose, that we are a new team member. We are a developer, who has just come on board.
-            First of all we should register.
-        </p>
+            projects and tasks.</p>
+            <br>
+            <p>So, to start, let’s suppose, that we are a new team member. We are a developer, who has just come on board.
+            First of all we should register.</p>
+            <br>
+            <p>Register function in views receives data from the form, passes it to the REST API
+                and then the REST API creates an instance of the User class and saves it to the database</p>
+        </div>
+        <pre class="code_example">
+            <code>
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash
+            (form.password.data).decode('utf-8')
+        user_query = UserREST()
+        user = user_query.post(
+            username=form.username.data,
+            email=form.email.data,
+            hashed_password=hashed_password
+        )
+        flash(f'Account created for {form.username.data}!', 'success')
+        return redirect(url_for('home'))
+    return render_template('register.html', title='Register', form=form)
+            </code>
+        </pre>
     </div>
 </section>
 
 <section class="grey_panel">
-    <div class="wrapper">
-        <div class="description_header">
-            <h3>Some description</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum harum id ipsam magni molestiae molestias
-                sunt! Animi corporis est exercitationem fuga, labore nemo obcaecati officia quae quasi qui repellat
-                suscipit?</p>
+    <div class="wrapper docs">
+        <div class="white_text">
+            <pre class="code_example">
+            <code>
+    def post(self, username, email, hashed_password):
+
+        user = User(
+                username=username,
+                email=email,
+                hashed_password=hashed_password
+                )
+
+        db.session.add(user)
+        db.session.commit()
+            </code>
+        </pre>
         </div>
 
+        <div class="description_header documentation_text">
+            <p>The REST API contains three classes:</p>
+            <p>- ProjectREST</p>
+            <p>- TaskREST</p>
+            <p>- UserREST</p>
+            <br>
+            <p>
+            Each class receives parameters from the views, performs CRUD operations
+            makes queries to the database, if it's needed,
+            make calculations for the additional parameters, that do not store in database,
+            and returns to the view object with data.
+            </p>
+            <br>
+            <p>
+                For example, to register new user
+                method POST of the UserREST class
+                creates an instance of the User class, that we have in our models,
+                receives from the view parameters of the new user,
+                adds this new instance to the database
+                and commits these changes.
+            </p>
+            <br>
+            <p>
+                Exactly the same situation we have,
+                when we want to add new project or task.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="white_panel">
+    <div class="wrapper docs">
+        <div class="documentation_text">
+            <p>To move forward after registration we have to change a profile of our user.</p>
+            <br>
+            <p>
+                An output of every GET method in REST API depends on access, that user has.
+                For example, if you are project manager and you have to see yor project,
+                all tasks of your project and all your team,
+                admin should change your role from "bench" to "PM"
+                and set your project name.
+            </p>
+            <br>
+            <p>
+                Then you will be able to click on "Project" button,
+                see your project, its deadline, all task on this project and all team members
+                If your role is "PO" or "admin",
+                you will be able to see all projects, all tasks and all users.
+            </p>
+            <br>
+            <p>Also admin can change salaries and bonuses.</p>
+            <p>User can change in his profile only a username or email.</p>
+
+        </div>
+        <pre class="code_example">
+            <code>
+    def put_by_user(self, username, email):
+        current_user.username = username
+        current_user.email = email
+        db.session.commit()
+
+    def put_by_admin(self,user_id, role, salary, bonus, task_name,
+                                                        project_name):
+        user = User.query.filter_by(user_id=user_id).first()
+        user.role = role
+        user.salary = salary
+        user.bonus = bonus
+        user.task_name = task_name
+        user.project_name = project_name
+        db.session.commit()
+            </code>
+        </pre>
+    </div>
+</section>
+
+<section class="grey_panel">
+    <div class="wrapper docs">
         <div class="white_text">
-            {% for task in tasks %}
-            <p>{{ task.task_name }}, {{ task.task_fulfilment }}%, {{ task.task_started }}, {{ task.task_deadline }}</p>
-            {% endfor %}
+            <pre class="code_example">
+            <code>
+"""
+Method receives from the views project_id - id of the project,
+witch details we want to see on the single project page
+Makes a query to the db and gets the project by project id.
+In addition to the db data
+method calculates how many days is after the start,
+amount of salary and bonuses of the team,
+how much money is spent since the project is started,
+how many days team has till deadline,
+how much money is supposed to spend before the project ends,
+what tasks are on the project,
+who is on this project.
+returns two tuples with project info and variable with tasks
+and users info.
+"""
+            </code>
+        </pre>
+        </div>
+
+        <div class="description_header documentation_text">
+            <p>
+                All methods and functions of routes.py and rest module
+                have detailed docstrings
+                about how to use all these methods and functions.
+            </p>
+            <br>
+            <p>
+                File models.py in models module contains three models,
+                that are used to create projects, tasks and users accordingly.
+            </p>
+            <br>
+            <p>
+                Exactly the same situation we have,
+                when we want to add new project or task.
+            </p>
         </div>
     </div>
 </section>
 
 <section class="white_panel">
     <div class="wrapper">
-        {% for user in users %}
-        <p>{{ user.username }}, {{ user.email }}, {{ user.role }}</p>
-        {% endfor %}
+        <p>This how the project page looks like for the product owner or admin</p>
+        <br>
+        <img src="/static/projects.png" alt="projects">
+        <br>
     </div>
 </section>
 
+<section class="white_panel">
+    <div class="wrapper">
+        <p>This how the product owner or admin see the list of users</p>
+        <br>
+        <img src="/static/users.png" alt="projects">
+        <br>
+        <br>
+        <br>
+    </div>
+</section>
+
+<section class="white_panel">
+    <div class="wrapper">
+        <p>This how team members see their project page</p>
+        <br>
+        <img src="/static/project_details.png" alt="projects">
+        <br>
+
+    </div>
+</section>
 
 {% endblock content %}

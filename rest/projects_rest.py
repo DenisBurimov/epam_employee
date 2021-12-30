@@ -7,26 +7,23 @@ from datetime import date
 class ProjectREST():
     def get(self):
         """
-        Метод гет сначала проверяет, есть ли у текущего юзера назначенный проект.
-        Если есть, то запрос в базу состоит только из назначенного проекта.
-        Если назначенного проекта нет (например нет у владельца или администратора),
-        то возвращается список всех проектов.
-        Дальше создаём пустой список, который потом будем возвращать
-        и запускаем цикл по запросу из базы
-        В каждой итерации вычисляем следующие параметры:
-        delta - разница между текущей датой и дедлайном
-        timedifference - это дельта, переведённая в формат только дней
+        Method gets data from db and passes to the views.
+        Get method checks if current user has a project.
+        If he has, then queries from db only this project.
+        If current user is admin or PO and has no project,
+        then get method queries all projects.
+        Then creates an empty list, that fills with
+        existing parameters of each project
+        and additionally fills with calculated values as
+        delta - difference between deadline and current date
+        timedifference - delta in days format
 
-        В цикле, который проходит по всем юзерам, у которых назначен этот проект,
-        вычисляем размер зарплаты и бонуса
-        Затем перемножаем эту цифру и количество дней, которые длится проект,
-        и получаем сколько уже заплачено
+        Then, looping through our users, that are on this project,
+        we calculate the total salary and bonuses on this project.
+        After that we calculate what we have to pay till the end of the project
+        and calculate what we already have spent on this project.
 
-        Затем умножаем сумму зарплат и бонусов команды на оставшиеся дни до дедлайна
-        и узнаём предположительные затраты до завершения проекта.
-
-        Затем запихиваем данный словарь в projects_info
-        :return: projects_info - список проектов (надо сделать json)
+        All this data we append to the new list and return it
         """
         if current_user.project_name:
             projects_selected = Project.query.filter_by(project_name=current_user.project_name)
@@ -56,13 +53,14 @@ class ProjectREST():
 
     def post(self, project_name, fulfilment, project_started, project_deadline):
         """
-        Принимаем параметры для создания экземпляра класса Project
+        Method receives project parameters and saves the project to the db.
+        Receiving project parameters from the views.
+        Creating an instance of the Project class
+        and saving this instance to the db.
         :param project_name:
         :param fulfilment:
         :param project_started:
         :param project_deadline:
-        Сохраняем проект в базу
-        :return: None
         """
         project = Project(
             project_name=project_name,
@@ -75,18 +73,23 @@ class ProjectREST():
 
     def get_project_details(self, project_id):
         """
-        Получаем ид проекта из вьюшки (там вызывается этот метод)
-        :param project_id:
-        С помощью ид делаем запрос конкретного проекта
-        Вычисляем время проекта в работе и время до дедлайна
-        Вычисляем суммарную зарплату и бонусы тех, кто на данном проекте
-        Вычисляем затраченные средства со дня старта проекта
-        Вычисляем ожидаемые затраты на зарплаты и бонусы до дедлайна
+        Method receives from the views project_id - id of the project,
+        witch details we want to see on the single project page
+        Makes a query to the db and gets the project by project id.
+        In addition to the db data (project_name, fulfilment, project_started, project_deadline)
+        method calculates how many days is after the start,
+        amount of salary and bonuses of the team,
+        how much money is spent since the project is started,
+        how many days team has till deadline,
+        how much money is supposed to spend before the project ends,
+        what tasks are on the project,
+        who is on this project.
 
-        Делаем запрос в базу по заданиям на этом конкретном проекте
-        вычисляем временные показатели для каждого задания (в работе и до дедлайна)
-        Делаем запрос в базу по участникам команды на каждом задании
-        :return: (project, tasks)
+        returns a tuple with two elements:
+        1) dict with certain project
+        2) dict with tasks of this project and team members of this project
+        returns a render of the html-page, that receives as parameters
+        variable with project info and variable with tasks and users info
         """
         project = Project.query.get(project_id)
         delta = project.project_deadline - date.today()
@@ -116,15 +119,9 @@ class ProjectREST():
 
     def put(self, project_id, project_name, fulfilment, project_started, project_deadline):
         """
-        Если форма апдейта проекта валидирована,
-        получаем из вьюшки параметры записи в базу:
-        :param project_id:
-        :param project_name:
-        :param fulfilment:
-        :param project_started:
-        :param project_deadline:
-        Делаем запрос в базу экземпляра класс экземпляра Project с заданным ид
-        и перезаписываем поля этого класса, используя полученные из вьюшки параметры
+        Method receives parameters of the project, that we want to update.
+        Makes a query to the db, gets the project by project_id.
+        Overwrites the project data to the db.
         """
         project = Project.query.filter_by(project_id=project_id).first()
         project.project_name = project_name
@@ -136,12 +133,10 @@ class ProjectREST():
 
     def delete(self, project_id):
         """
-        Получаем из вьюшки ид проекта
-        Делаем запрос в базу и получаем проект с данным ид
-        Удаляем проект из базы
-        Коммитим изменения в базе
-        :return:
+        Method receives id of the project, that we have to delete,
+        queries to db by this project_id and deletes this project
         """
         project = Project.query.get_or_404(project_id)
         db.session.delete(project)
         db.session.commit()
+

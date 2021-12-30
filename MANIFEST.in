@@ -1,0 +1,2 @@
+recursive-include epam_employee/templates *
+recursive-include epam_employee/static *

@@ -12,6 +12,10 @@ from rest.user_rest import UserREST
 @app.route("/")
 @app.route("/home")
 def home():
+    """
+    Home Page just returns the project documentation
+    :return:
+    """
     projects = Project.query.all()
     tasks = Task.query.all()
     users = User.query.all()
@@ -21,13 +25,9 @@ def home():
 @app.route("/projects")
 def projects():
     """
-    Здесь вьюшка импортирует класс из реста,
-    создаёт экземпляр этого класса,
-    и этот экземпляр выполняет метод гет,
-    который возвращает список проектов.
-    *Правда, надо сделать json
-    функция возвращает рендер html-страницы projects.html,
-    в который она передайт список проектов (projects=projects_info)
+    This view creates instance of the ProjectREST class
+    to execute the get method of this class.
+    Get method returns a list of all projects
     """
     projects_query = ProjectREST()
     projects_info = projects_query.get()
@@ -38,12 +38,12 @@ def projects():
 @app.route("/add_project", methods=['GET', 'POST'])
 def add_project():
     """
-    Здесь создаём экземпляр класса формы создания проекта
-    Затем, если форма проходит валидацию,
-    то создаём экземпляр класса ProjectREST
-    и вызываем его метод пост
-    После чего возвращаем ридайрект на страницу списка проектов
-    :return: рендерим страницу добавления проекта, если не было отправки формы либо не было валидации
+    This view creates a form as an instance of the ProjectCreate class
+    Then if the form is validated on submit,
+    we create an instance of the ProjectREST class
+    to execute the post method of this class.
+    Post method creates a project in the PEST API
+    After that we raise a success message and redirect to the projects page
     """
     form = ProjectCreate()
     if form.validate_on_submit():
@@ -62,15 +62,13 @@ def add_project():
 @app.route("/projects/<int:project_id>")
 def project_details(project_id):
     """
-    Эта функция для отображения всех деталей проекта
-    включая задания на проекте и команду проекта
-    Получаем ид проекта из адресной строки
-    :param project_id:
-    Создаём экземпляр класса ProjectREST
-    Его метод get_details возвращает нам тюпл из двух элементов:
-    первый элемент - словарь проекта
-    второй элемент - словарь заданий и участников команды
-    :return: рендер html-страницы, в который мы передаём проект и задания
+    This is a function for displaying details of the given project.
+    Receives the id of the project, creates ProjectREST class instance,
+    and its method get_details returns a tuple with two elements:
+    1) dict with certain project
+    2) dict with tasks of this project and team members of this project
+    returns a render of the html-page, that receives as parameters
+    variable with project info and variable with tasks and users info
     """
     project_query = ProjectREST()
     get_getails = project_query.get_project_details(project_id)
@@ -83,20 +81,16 @@ def project_details(project_id):
 @app.route("/projects/update/<int:project_id>", methods=['GET', 'POST'])
 def project_update(project_id):
     """
-    Создаём форму - экземпляр класса ProjectUpdate
-    Создаём экземпляр класса ProjectREST,
-    чтобы с помощью его метода put внести изменения,
-    и чтобы с помощью его метода get_details отобразить данные о проекте в форме
-    :param project_id: передаём в метод  get_details
-
-    Если форма проходит валидацию и имя проекта не занято,
-        передаём в метод put класса ProjectREST параметры:
-        project_id, project_name, fulfilment, project_started, project_deadline
-        возвращаем редайрект на страницу с проектами
-        :return: redirect(url_for('projects'))
-или передаём, что имя занято
-
-    Если используется не метод PUT, а метод GET,  то выводим в поля формы текущие данные о проекте
+    Receives the id of the project, that we want to update.
+    Creates a form as an instance of the ProjectUpdate class,
+    creates an instance of the ProjectREST  class,
+    calls  get_project_details method to get all the parameters of the given project
+    and if the form is validated on submit
+    starts try - except process to pass the new parameters
+    with the put method to the REST API
+    If project name isn't unique, raises a message about that
+    If nothing posts, then just renders a form,
+    filled with info from get_project_details method
     """
     form = ProjectUpdate()
     project_query = ProjectREST()
@@ -128,13 +122,11 @@ def project_update(project_id):
 @app.route("/projects/delete/<int:project_id>", methods=['GET', 'POST'])
 def project_deleting(project_id):
     """
-    создаём экземпляр класса ProjectREST
-    и передаём в его метод delete параметр project_id
-    :param project_id:
-    метод delete удаляет проект,
-    после чего мы вызываем сообщение об успехе
-    и возвращаем редайрект на страницу проектов
-    :return:
+    Receives project_id of the project, that we want to delete,
+    creates an instance of the ProjectREST class,
+    calls delete method,
+    flashes the success message
+    and redirects to the projects page
     """
     project_query = ProjectREST()
     project_deleted = project_query.delete(project_id)
@@ -145,10 +137,9 @@ def project_deleting(project_id):
 @app.route("/tasks")
 def tasks():
     """
-    Создаём экземпляр класса TaskREST
-    с тем, чтобы его метод get вернул список заданий
-    Возвращаем рендер страницы, в который передаём список заданий и текущего пользователя
-    :return:
+    Creates an instance of the TaskREST class,
+    calls get method, that returns the list of all tasks.
+    Passes that list to the template
     """
     task_query = TaskREST()
     tasks_to_pass = task_query.get()
@@ -159,13 +150,13 @@ def tasks():
 @app.route("/task_adding", methods=['GET', 'POST'])
 def task_adding():
     """
-    Создаём форму на основе класса TaskCreate
-    Создаём экземпляр класса TaskREST,
-    чтобы его метод post записал в базу новое задание
-    В метод post передаём параметры.
-    Выводим флеш сообщение, что всё хорошо
-    Возвращаем редайрект на страницу с заданиями
-    :return:
+    Creates form as an instance of the TaskCreate class.
+    If the form is validated on submit,
+    creates an instance of the TaskREST class,
+    calls the post method and passes to it the parameters of the task:
+    project_name, task_name, task_fulfilment, task_started, task_deadline
+    Outputs a success message.
+    Returns redirect to the tasks page
     """
     form = TaskCreate()
     if form.validate_on_submit():
@@ -185,20 +176,17 @@ def task_adding():
 @app.route("/task_update/<int:task_id>", methods=['GET', 'POST'])
 def task_update(task_id):
     """
-    Создаём форму на основе класса TaskUpdate
-    создаём экземпляр класса TaskREST,
-    чтобы его метод get_task_details вернул нам данные о задании,
-    а его метод put апдейтнул задание
-    В методы get_task_details и put мы передаём task_id
-    :param task_id:
-    Дальше, если форма валидирована и имя имя задания уникально,
-    вызываем метод put и передаём в него все параметры задания
-    В случае успеха выводится флеш сообщение об успехе
-    и возвращается ридайрект на страницу проекта
-    Если имя занято, выводится сообщение об этом
-    Если форма пуста, то в неё передаются данные из метода get_task_details
-    и возвращается рендер страницы, в который передаются пропертиз задания
-    :return:
+    Receives the id of the task, that we want to update
+    Creates a form as an instance of the TaskUpdate class.
+    Creates an instance of the TaskREST class,
+    calls get_task_details method and passes to it the task_id.
+    Then if the form is validated on submit,
+    check if task name is unique
+    and launches the try - except construction to pass to the REST API
+    all parameters of the task with put method.
+
+    If nothing updates, just renders the form, filled with data
+    from the get_task_details method
     """
     form = TaskUpdate()
     task_query = TaskREST()
@@ -232,13 +220,11 @@ def task_update(task_id):
 @app.route("/task_update/delete/<int:task_id>")
 def task_delete(task_id):
     """
-    Создаём форму на основе класса TaskUpdate
-    создаём экземпляр класса TaskREST,
-    чтобы его метод get_task_details вернул нам данные о задании,
-    а его метод delete удалил задание
-    В методы get_task_details и delete мы передаём task_id
-    :param task_id:
-    :return:
+    Receives task_id of the task, that we want to delete,
+    creates an instance of the TaskREST class,
+    calls delete method,
+    flashes the success message
+    and redirects to the project_details page
     """
     task_query = TaskREST()
     task = task_query.get_task_details(task_id)
@@ -252,8 +238,11 @@ def task_delete(task_id):
 @app.route("/users")
 def users():
     """
-
+    Creating instance of UserRest class,
+    to use its get method
+    This method returns from REST API the list of all users
     :return:
+    Then we pass into the template users variable
     """
     users_query = UserREST()
     users = users_query.get()
@@ -264,8 +253,17 @@ def users():
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     """
-
+    A classic registration method
+    Firstly we create a form as a RegistrationForm class instance
+    If form is validate on submit,
+    username, email and hashed password are passed to REST API
+    as arguments of the post method UserREST class
+    If this post operation successful,
+    we output flash message about success
+    and return redirection to the home page
     :return:
+    If not, returns render of the registration page template,
+    that recieves as parameters title and form
     """
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -283,12 +281,21 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    """
+    Creating LoginForm instance
+    Then, if this form is validated on submit,
+    we check if user with given parameters exists in database
+    and given password is equal to password in database,
+    we log in user
+    :return:
+    """
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.hashed_password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
+            flash(f'You are successfully logged in as a(n) {current_user.role}', 'success')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
@@ -297,6 +304,9 @@ def login():
 
 @app.route("/logout")
 def logout():
+    """
+    Standard built-in logout_user method of the flask_login module
+    """
     logout_user()
     return redirect(url_for('home'))
 
@@ -305,8 +315,19 @@ def logout():
 @login_required
 def account():
     """
-
+    This is form to change username and email by a user himself
+    Other parameters are able to change by project manager of admin
+    Creating a form as a RegistrationForm class instance
+    If form is validate on submit,
+    username, email are passed to REST API
+    as arguments of the put method UserREST class
+    If this post operation successful,
+    we output flash message about success
+    and return redirection to the account page
     :return:
+    If not, returns render of the account page template,
+    that recieves as parameters title and form
+    and contains in form fields current user username and email
     """
     form = UpdateAccount()
     if form.validate_on_submit():
@@ -323,9 +344,20 @@ def account():
 @app.route("/users/<int:user_id>", methods=['GET', 'POST'])
 def user_details(user_id):
     """
-
+    This form is to change user's role, salary and bonus by PM or admin
+    Receives the user_id
     :param user_id:
+    Creating a form as a RegistrationForm class instance
+    If form is validate on submit,
+    role, salary and bonus are passed to REST API
+    as arguments of the put method UserREST class
+    If this post operation successful,
+    we output flash message about success
+    and return redirection to the account page
     :return:
+    If not, returns render of the account page template,
+    that receives as parameters title and form
+    and contains in form fields role, salary and bonus of the user with given user_id
     """
     form = UsersManagement()
     user_query = UserREST()
