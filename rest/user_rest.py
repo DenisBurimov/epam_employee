@@ -1,6 +1,16 @@
 from service import db
 from models.models import User
 from flask_login import current_user
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+log_formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+filehandler = logging.FileHandler('users_logger.log')
+filehandler.setLevel(logging.INFO)
+filehandler.setFormatter(log_formatter)
+logger.addHandler(filehandler)
 
 
 class UserREST():
@@ -36,6 +46,7 @@ class UserREST():
         user = User(username=username, email=email, hashed_password=hashed_password)
         db.session.add(user)
         db.session.commit()
+        logger.info(f"User {username} registered with email {email}")
 
     def put_by_user(self, username, email):
         """
@@ -48,6 +59,7 @@ class UserREST():
         current_user.username = username
         current_user.email = email
         db.session.commit()
+        logger.info(f"User {username} ({email}) updated user's info")
 
     def put_by_admin(self,user_id, role, salary, bonus, task_name, project_name):
         """
@@ -69,4 +81,4 @@ class UserREST():
         user.task_name = task_name
         user.project_name = project_name
         db.session.commit()
-
+        logger.info(f"User {user.username} updated by {current_user} with parameters: role {role}, salary {salary}, bonus {bonus}, task_name {task_name}, project_name {project_name}")

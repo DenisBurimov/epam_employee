@@ -2,6 +2,16 @@ from service import db
 from models.models import Project, Task, User
 from flask_login import current_user
 from datetime import date
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+log_formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+filehandler = logging.FileHandler('tasks_logger.log')
+filehandler.setLevel(logging.INFO)
+filehandler.setFormatter(log_formatter)
+logger.addHandler(filehandler)
 
 
 class TaskREST():
@@ -31,7 +41,8 @@ class TaskREST():
             delta = tasks_query.task_deadline - date.today()
             tasks_query.timedifference = delta.days
             tasks_query.users = User.query.filter_by(task_name=tasks_query.task_name)
-            tasks_to_pass.append(tasks_query)
+            if Project.query.filter_by(project_name=tasks_query.project_name).first() in Project.query.all():
+                tasks_to_pass.append(tasks_query)
 
         return tasks_to_pass
 
@@ -68,6 +79,7 @@ class TaskREST():
         )
         db.session.add(task)
         db.session.commit()
+        logger.info(f"Task {project_name} added by {current_user}: fulfilment {task_fulfilment}, project_started {task_started}, project_deadline {task_deadline}")
 
     def put(self, task_id, project_name, task_name, task_fulfilment, task_started, task_deadline):
         """
@@ -88,6 +100,7 @@ class TaskREST():
         task.task_started = task_started
         task.task_deadline = task_deadline
         db.session.commit()
+        logger.info(f"Task {project_name} updated by {current_user}: fulfilment {task_fulfilment}, project_started {task_started}, project_deadline {task_deadline}")
 
     def delete(self, task_id):
         """
@@ -95,5 +108,6 @@ class TaskREST():
         queries to db by this task_id and deletes this task
         """
         task = Task.query.filter_by(task_id=task_id).first()
+        logger.info(f"Task {task.task_name} deleted by {current_user}")
         db.session.delete(task)
         db.session.commit()

@@ -2,6 +2,16 @@ from service import db
 from models.models import Project, Task, User
 from flask_login import current_user
 from datetime import date
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+log_formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+filehandler = logging.FileHandler('projects_logger.log')
+filehandler.setLevel(logging.INFO)
+filehandler.setFormatter(log_formatter)
+logger.addHandler(filehandler)
 
 
 class ProjectREST():
@@ -70,6 +80,8 @@ class ProjectREST():
         )
         db.session.add(project)
         db.session.commit()
+        logger.info(f"Project {project_name} added by {current_user}: fulfilment {fulfilment}, project_started {project_started}, project_deadline {project_deadline}")
+
 
     def get_project_details(self, project_id):
         """
@@ -129,6 +141,7 @@ class ProjectREST():
         project.project_started = project_started
         project.project_deadline = project_deadline
         db.session.commit()
+        logger.info(f"Project {project_name} updated by {current_user}: fulfilment {fulfilment}, project_started {project_started}, project_deadline {project_deadline}")
 
 
     def delete(self, project_id):
@@ -137,6 +150,6 @@ class ProjectREST():
         queries to db by this project_id and deletes this project
         """
         project = Project.query.get_or_404(project_id)
+        logger.info(f"Project {project.project_name} deleted by {current_user}")
         db.session.delete(project)
         db.session.commit()
-

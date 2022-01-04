@@ -1,4 +1,4 @@
-from service import app, db, bcrypt
+from service import app, bcrypt
 from flask import render_template, redirect, url_for, request, flash
 from models.models import Project, Task, User
 from service.forms import RegistrationForm, LoginForm, UpdateAccount, UsersManagement, ProjectUpdate, ProjectCreate, \
