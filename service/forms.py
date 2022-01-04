@@ -17,10 +17,20 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('That username is taken. Please choose a different one.')
 
+        forbidden_symbols = ['!', '@', '#', '%', '^', '&', '*', '(', ')', ':', ';', '<', '>', '?', ',', '/', '|', '\\', '*', '+', "'", '"']
+        for symbol in forbidden_symbols:
+            if symbol in username.data:
+                raise ValidationError('Forbidden symbols in username')
+
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
+
+        forbidden_symbols = ['!', '#', '%', '^', '&', '*', '(', ')', ':', ';', '<', '>', '?', ',', '/', '|', '\\', '*', '+', "'", '"']
+        for symbol in forbidden_symbols:
+            if symbol in email.data:
+                raise ValidationError('Forbidden symbols in username')
 
 
 class LoginForm(FlaskForm):
