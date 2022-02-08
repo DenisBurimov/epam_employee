@@ -6,13 +6,13 @@ from flask_login import LoginManager
 
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
-app.config['SECRET_KEY'] = 'bcdae24d30fd163c00cdd40bb6d9ef22'
+app.config['SECRET_KEY'] = ''
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:0034@localhost/mcompany'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
-app.config['MYSQL_DATABASE_DB'] = 'mcompany'
+app.config['MYSQL_DATABASE_USER'] = ''
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_DB'] = ''
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 
 db = SQLAlchemy(app)
